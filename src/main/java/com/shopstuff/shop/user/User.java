@@ -29,5 +29,4 @@ public class User {
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
-    private int amountSpent;
 }

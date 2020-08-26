@@ -1,10 +1,12 @@
 package com.shopstuff.shop.item;
 
+import com.shopstuff.shop.shoppingcart.ShoppingCart;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Data
@@ -16,6 +18,7 @@ public class Item {
     private Integer id;
     private String name;
     private String category;
-    private String series;
     private int price;
+
+
 }

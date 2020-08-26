@@ -1,16 +1,20 @@
 package com.shopstuff.shop.item;
 
 
+import com.shopstuff.shop.exceptions.NotFoundExceptions;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
+
 import java.net.URI;
-import java.util.List;
+
 
 @RestController
 @RequestMapping("item")
@@ -22,39 +26,22 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public Item getItem(@PathVariable int id) {
-        return itemService.findById(id).orElseThrow(NotFoundException::new);
-    }
-    @GetMapping(params="series")
-    public Item itemBySeries(@RequestParam String series) {
-        return itemService.findBySeries(series).orElseThrow(NotFoundException::new);
+        return itemService.findById(id).orElseThrow(NotFoundExceptions::new);
     }
 
     @GetMapping
-    public List<Item> allItems(@PageableDefault(size = 20) Pageable pageable) {
+    public Page<Item> allItems(@PageableDefault(size = 20) Pageable pageable) {
         return itemService.findAll(pageable);
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public static class NotFoundException extends RuntimeException {}
-
     @PostMapping
     public ResponseEntity<Item> addItem(@RequestBody Item item) {
-        if (!itemService.existsBySeries(item.getSeries())){
-            itemService.saveOrUpdate(item);
-            return ResponseEntity.created(URI.create("/items" + item.getId())).body(item);
-        }
-        return ResponseEntity.badRequest().build();
-    }
-
-    @DeleteMapping("{series}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteItemBySeries(@PathVariable String series){
-        itemService.deleteBySeries(series);
+        return ResponseEntity.created(URI.create("item/"+ item.getId())).body(item);
     }
 
     @PutMapping("{id}")
-    public Item updateItem(@PathVariable int id ,@RequestBody Item item){
-        if (itemService.existsById(id)){
+    public Item updateItem(@PathVariable int id, @RequestBody Item item) {
+        if (itemService.existsById(id)) {
             item.setId(id);
         }
         return itemService.saveOrUpdate(item);

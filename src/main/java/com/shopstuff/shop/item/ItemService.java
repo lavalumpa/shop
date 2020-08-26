@@ -1,10 +1,12 @@
 package com.shopstuff.shop.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
-import java.util.List;
+
+
 import java.util.Optional;
 
 @Service
@@ -21,28 +23,16 @@ public class ItemService {
         return itemRepository.existsById(id);
     }
 
-    public boolean existsBySeries (String series){
-        return itemRepository.existsBySeries();
-    }
-
-
     public Item saveOrUpdate(Item item) {
-        return itemRepository.save(item));
+        return itemRepository.save(item);
     }
 
     public Optional<Item> findById(int id){
         return itemRepository.findById(id);
     }
 
-    public void deleteBySeries (int series){
-        return itemRepository.deleteBySeries(series);
+    public Page<Item> findAll(Pageable pageable){
+        return itemRepository.findAll(pageable);
     }
 
-    public List<Item> findAll(Pageable pageable){
-        return itemRepository.findAll();
-    }
-
-    public Optional<Item> findBySeries (String series){
-        return itemRepository.findBySeries(series);
-    }
 }
