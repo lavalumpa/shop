@@ -3,9 +3,11 @@ package com.shopstuff.shop.shoppingcart;
 
 import com.shopstuff.shop.exceptions.NotFoundExceptions;
 import com.shopstuff.shop.item.Item;
+import com.shopstuff.shop.item.ItemRepository;
 import com.shopstuff.shop.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -14,15 +16,16 @@ import java.util.Set;
 public class ShoppingCartService {
 
     private final ShoppingCartRepository shoppingCartRepository;
-
+    private final ItemRepository itemRepository;
 
     public void clearCart (int id){
         shoppingCartRepository.getOne(id).deleteAll();
     }
 
 
+    @Transactional
     public int purchase(int id){
-        ShoppingCart cart= shoppingCartRepository.findById(id).orElseThrow(NotFoundExceptions::new);
+        var cart= shoppingCartRepository.findById(id).orElseThrow(NotFoundExceptions::new);
         int price = cart.getTotalPrice();
         cart.deleteAll();
         shoppingCartRepository.save(cart);
@@ -39,9 +42,11 @@ public class ShoppingCartService {
         return shoppingCartRepository.findById(id).orElseThrow(NotFoundExceptions::new).getItems();
     }
 
-    public void addItemToCart(Item item, ShoppingCart shoppingCart){
-        shoppingCart.addItem(item);
-        shoppingCartRepository.save(shoppingCart);
+    @Transactional
+    public void addItemToCart(int cartId,int itemId){
+        ShoppingCart cart = shoppingCartRepository.findById(cartId).orElseThrow(NotFoundExceptions::new);
+        cart.addItem(itemRepository.findById(itemId).orElseThrow(NotFoundExceptions::new));
+        shoppingCartRepository.save(cart);
     }
 
 

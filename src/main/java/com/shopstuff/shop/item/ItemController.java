@@ -2,13 +2,11 @@ package com.shopstuff.shop.item;
 
 
 import com.shopstuff.shop.exceptions.NotFoundExceptions;
-import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +34,8 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Item> addItem(@RequestBody Item item) {
-        return ResponseEntity.created(URI.create("item/"+ item.getId())).body(item);
+        Item saved= itemService.saveItem(item);
+        return ResponseEntity.created(URI.create("item/"+ saved.getId())).body(item);
     }
 
     @PutMapping("{id}")
@@ -44,6 +43,6 @@ public class ItemController {
         if (itemService.existsById(id)) {
             item.setId(id);
         }
-        return itemService.saveOrUpdate(item);
+        return itemService.saveItem(item);
     }
 }

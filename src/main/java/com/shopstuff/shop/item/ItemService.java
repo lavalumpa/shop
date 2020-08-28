@@ -23,7 +23,7 @@ public class ItemService {
         return itemRepository.existsById(id);
     }
 
-    public Item saveOrUpdate(Item item) {
+    public Item saveItem(Item item) {
         return itemRepository.save(item);
     }
 

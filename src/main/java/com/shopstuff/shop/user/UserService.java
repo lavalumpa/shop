@@ -16,7 +16,7 @@ public class UserService {
     private final ShoppingCartService shoppingCartService;
 
     @Transactional
-    public User adduser(User user){
+    public User saveUser(User user){
         userRepository.save(user);
         return shoppingCartService.createShoppingCart(user).getUser();
     }

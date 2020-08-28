@@ -16,15 +16,18 @@ public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
 
     @PostMapping("{id}/purchase")
-    public int purchase(@PathVariable int id){
+    public int purchase(@PathVariable int id) {
         return shoppingCartService.purchase(id);
     }
 
     @GetMapping("{id}/items")
-    public Set<Item> showCartItems(@PathVariable int id){
+    public Set<Item> showCartItems(@PathVariable int id) {
         return shoppingCartService.showItems(id);
     }
 
-
+    @PutMapping("{cartId}/item/{itemId}")
+    public void addItemToCart(@PathVariable int cartid, @PathVariable int itemId) {
+        shoppingCartService.addItemToCart(cartid,itemId);
+    }
 
 }
