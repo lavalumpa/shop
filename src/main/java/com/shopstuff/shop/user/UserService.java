@@ -2,7 +2,7 @@ package com.shopstuff.shop.user;
 
 
 
-import com.shopstuff.shop.shoppingcart.ShoppingCartService;
+import com.shopstuff.shop.shoppingcart.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final ShoppingCartService shoppingCartService;
+    private final CartService cartService;
 
     @Transactional
     public User saveUser(User user){
         userRepository.save(user);
-        return shoppingCartService.createShoppingCart(user).getUser();
+        return cartService.createCart(user).getUser();
     }
 
 

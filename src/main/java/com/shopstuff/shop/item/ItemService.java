@@ -35,4 +35,8 @@ public class ItemService {
         return itemRepository.findAll(pageable);
     }
 
+    public void deleteById(int id){
+        itemRepository.deleteById(id);
+    }
+
 }

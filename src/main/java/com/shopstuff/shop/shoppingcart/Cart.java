@@ -16,7 +16,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShoppingCart {
+public class Cart {
 
     @Id
     @GeneratedValue

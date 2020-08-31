@@ -11,23 +11,23 @@ import java.util.Set;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("cart")
-public class ShoppingCartController {
+public class CartController {
 
-    private final ShoppingCartService shoppingCartService;
+    private final CartService cartService;
 
     @PostMapping("{id}/purchase")
     public int purchase(@PathVariable int id) {
-        return shoppingCartService.purchase(id);
+        return cartService.purchase(id);
     }
 
     @GetMapping("{id}/items")
     public Set<Item> showCartItems(@PathVariable int id) {
-        return shoppingCartService.showItems(id);
+        return cartService.showItems(id);
     }
 
     @PutMapping("{cartId}/item/{itemId}")
     public void addItemToCart(@PathVariable int cartid, @PathVariable int itemId) {
-        shoppingCartService.addItemToCart(cartid,itemId);
+        cartService.addItemToCart(cartid,itemId);
     }
 
 }

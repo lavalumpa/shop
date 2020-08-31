@@ -13,45 +13,45 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class ShoppingCartService {
+public class CartService {
 
-    private final ShoppingCartRepository shoppingCartRepository;
+    private final CartRepository cartRepository;
     private final ItemRepository itemRepository;
 
     public void clearCart (int id){
-        shoppingCartRepository.getOne(id).deleteAll();
+        cartRepository.getOne(id).deleteAll();
     }
 
 
     @Transactional
     public int purchase(int id){
-        var cart= shoppingCartRepository.findById(id).orElseThrow(NotFoundExceptions::new);
+        var cart= cartRepository.findById(id).orElseThrow(NotFoundExceptions::new);
         int price = cart.getTotalPrice();
         cart.deleteAll();
-        shoppingCartRepository.save(cart);
+        cartRepository.save(cart);
         return price;
     }
 
-    public ShoppingCart createShoppingCart(User user){
-        var cart= new ShoppingCart();
+    public Cart createCart(User user){
+        var cart= new Cart();
         cart.setUser(user);
-        return shoppingCartRepository.save(cart);
+        return cartRepository.save(cart);
     }
 
     public Set<Item> showItems (int id){
-        return shoppingCartRepository.findById(id).orElseThrow(NotFoundExceptions::new).getItems();
+        return cartRepository.findById(id).orElseThrow(NotFoundExceptions::new).getItems();
     }
 
     @Transactional
     public void addItemToCart(int cartId,int itemId){
-        ShoppingCart cart = shoppingCartRepository.findById(cartId).orElseThrow(NotFoundExceptions::new);
+        Cart cart = cartRepository.findById(cartId).orElseThrow(NotFoundExceptions::new);
         cart.addItem(itemRepository.findById(itemId).orElseThrow(NotFoundExceptions::new));
-        shoppingCartRepository.save(cart);
+        cartRepository.save(cart);
     }
 
 
     public int totalPrice(int id){
-        return shoppingCartRepository.findById(id).orElseThrow(NotFoundExceptions::new).getTotalPrice();
+        return cartRepository.findById(id).orElseThrow(NotFoundExceptions::new).getTotalPrice();
     }
 
 }
