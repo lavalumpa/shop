@@ -1,4 +1,4 @@
-CREATE TABLE user (
+create TABLE user (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR (100) NOT NULL UNIQUE,
@@ -7,18 +7,19 @@ CREATE TABLE user (
     lastModifiedAt TIMESTAMP
 );
 
-CREATE TABLE cart (
+create TABLE cart (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     userId INTEGER NOT NULL
 );
 
-CREATE TABLE cart_item (
+create TABLE cart_item (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     cartId INTEGER NOT NULL,
-    itemId INTEGER NOT NULL
+    itemId INTEGER NOT NULL,
+    quantity INTEGER NOT NULL
 );
 
-CREATE TABLE item(
+create TABLE item(
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     price INTEGER NOT NULL

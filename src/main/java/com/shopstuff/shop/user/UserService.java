@@ -2,10 +2,12 @@ package com.shopstuff.shop.user;
 
 
 
-import com.shopstuff.shop.shoppingcart.CartService;
+import com.shopstuff.shop.cart.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 
 @Service
@@ -15,10 +17,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final CartService cartService;
 
+    public Optional<User> findById(int id){
+        return userRepository.findById(id);
+    }
+
     @Transactional
     public User saveUser(User user){
-        userRepository.save(user);
-        return cartService.createCart(user).getUser();
+        var savedUser = userRepository.save(user);
+        cartService.createCart(savedUser);
+        return savedUser;
     }
 
 

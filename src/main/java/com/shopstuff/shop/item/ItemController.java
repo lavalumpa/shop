@@ -1,7 +1,7 @@
 package com.shopstuff.shop.item;
 
 
-import com.shopstuff.shop.exceptions.NotFoundExceptions;
+import com.shopstuff.shop.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,7 +25,7 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public Item getItem(@PathVariable int id) {
-        return itemService.findById(id).orElseThrow(NotFoundExceptions::new);
+        return itemService.findById(id).orElseThrow(NotFoundException::new);
     }
 
     @GetMapping
