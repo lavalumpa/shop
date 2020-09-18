@@ -12,7 +12,7 @@ public class CartItemDTO {
     private int quantity;
     private int totalPrice;
 
-    public static CartItemDTO toDto(CartItem cartItem) {
+    public static CartItemDTO toDTO(CartItem cartItem) {
       var dto =CartItemDTO.builder()
               .itemId(cartItem.getItem().getId())
               .quantity(cartItem.getQuantity())

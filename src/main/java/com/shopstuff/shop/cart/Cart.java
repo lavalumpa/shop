@@ -34,6 +34,9 @@ public class Cart {
         this.cartItems.add(cartItem);
         cartItem.setCart(this);
     }
+    public void clear(){
+        cartItems.clear();
+    }
 
 
 }

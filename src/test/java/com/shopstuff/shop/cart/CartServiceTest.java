@@ -118,7 +118,7 @@ public class CartServiceTest {
         var cartItem = CartItem.builder().item(item).quantity(5).build();
         when(cartRepository.findById(eq(1))).thenReturn(Optional.of(cart));
         when(itemService.findById(eq(1))).thenReturn(Optional.of(item));
-        cartService.addItemToCart(1, CartItemDTO.toDto(cartItem));
+        cartService.addItemToCart(1, CartItemDTO.toDTO(cartItem));
         verify(cartRepository).save(cartCaptor.capture());
         cartItem.setCart(cart);
         assertEquals(List.of(cartItem), cartCaptor.getValue().getCartItems());

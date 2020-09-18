@@ -18,12 +18,12 @@ public class CartDTO {
         return cartItems.stream().map(CartItemDTO::getTotalPrice).reduce(Integer::sum).orElse(0);
     }
 
-    public static CartDTO toDto(Cart cart) {
+    public static CartDTO toDTO(Cart cart) {
         CartDTO cartDTO = CartDTO.builder().build();
         cartDTO.setId(cart.getId());
         cartDTO.setCartItems(cart.getCartItems()
                 .stream()
-                .map(CartItemDTO::toDto)
+                .map(CartItemDTO::toDTO)
                 .collect(Collectors.toList()));
         return cartDTO;
     }
