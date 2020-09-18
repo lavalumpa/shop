@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,5 +38,16 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.password").value(user.getPassword()))
                 .andExpect(jsonPath("$.createdAt").exists())
                 .andExpect(jsonPath("$.lastModifiedDate").exists());
+    }
+
+    @Test
+    public void testAddInvalidUser() throws Exception{
+        var user=User.builder().name("Steve").email("test").password("4az5j@98gbmawq").build();
+        var json=objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("Password must have at least 8 characters"))
+                .andDo(MockMvcResultHandlers.print());;
     }
 }
