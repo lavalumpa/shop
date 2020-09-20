@@ -1,6 +1,7 @@
 package com.shopstuff.shop.cart;
 
 
+import com.shopstuff.shop.receipt.ReceiptDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +15,11 @@ public class CartController {
 
     private final CartService cartService;
 
+
     @PostMapping("{id}/purchase")
-    public int purchase(@PathVariable int id) {
-        return cartService.purchase(id);
+    public ReceiptDTO purchase(@PathVariable int id) {
+        var receipt=cartService.purchase(id);
+        return ReceiptDTO.toDTO(receipt);
     }
 
     @GetMapping("{id}")

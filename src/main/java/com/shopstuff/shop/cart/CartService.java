@@ -5,6 +5,8 @@ import com.shopstuff.shop.exceptions.NotFoundException;
 
 
 import com.shopstuff.shop.item.ItemService;
+import com.shopstuff.shop.receipt.Receipt;
+import com.shopstuff.shop.receipt.ReceiptService;
 import com.shopstuff.shop.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,14 +19,15 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final ItemService itemService;
+    private final ReceiptService receiptService;
 
     @Transactional
-    public int purchase(int id) {
+    public Receipt purchase(int id) {
         var cart = cartRepository.findById(id).orElseThrow(NotFoundException::new);
-        int price = totalPrice(id);
+        var receipt=receiptService.createReceipt(cart);
         cart.clear();
         cartRepository.save(cart);
-        return price;
+        return receipt;
     }
 
     public Cart createCart(User user) {
@@ -40,7 +43,7 @@ public class CartService {
     @Transactional
     public Cart addItemToCart(int cartId, CartItemDTO cartItemDTO) {
         Cart cart = cartRepository.findById(cartId).orElseThrow(NotFoundException::new);
-        final CartItem cartItem = CartItem.builder()
+        CartItem cartItem = CartItem.builder()
                 .item(itemService.findById(cartItemDTO.getItemId()).orElseThrow(NotFoundException::new))
                 .quantity(cartItemDTO.getQuantity())
                 .build();

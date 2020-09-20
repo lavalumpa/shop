@@ -4,6 +4,8 @@ package com.shopstuff.shop.cart;
 import com.shopstuff.shop.exceptions.NotFoundException;
 import com.shopstuff.shop.item.Item;
 import com.shopstuff.shop.item.ItemService;
+import com.shopstuff.shop.receipt.Receipt;
+import com.shopstuff.shop.receipt.ReceiptService;
 import com.shopstuff.shop.user.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,8 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +30,9 @@ public class CartServiceTest {
 
     @Captor
     private ArgumentCaptor<Cart> cartCaptor;
+
+    @Mock
+    private ReceiptService receiptService;
 
     @Mock
     private ItemService itemService;
@@ -76,8 +80,9 @@ public class CartServiceTest {
         cart.getCartItems().add(CartItem.builder().item(Item.builder().price(100).build()).quantity(5).build());
         cart.getCartItems().add(CartItem.builder().item(Item.builder().price(700).build()).quantity(1).build());
         when(cartRepository.findById(eq(1))).thenReturn(Optional.of(cart));
-        int price = cartService.purchase(1);
-        assertEquals(100*5+700, price);
+        when (receiptService.createReceipt(eq(cart))).thenReturn(Receipt.builder().totalPrice(100*5+700).build());
+        var receipt = cartService.purchase(1);
+        assertEquals(100*5+700,receipt.getTotalPrice());
         verify(cartRepository).save(cartCaptor.capture());
         assertEquals(cart, cartCaptor.getValue());
     }
@@ -86,7 +91,8 @@ public class CartServiceTest {
     public void testIfPurchaseEmptyCart() {
         Cart cart = Cart.builder().id(1).build();
         when(cartRepository.findById(eq(1))).thenReturn(Optional.of(cart));
-        assertEquals(0, cartService.purchase(1));
+        when (receiptService.createReceipt(eq(cart))).thenReturn(Receipt.builder().build());
+        assertEquals(0, cartService.purchase(1).getTotalPrice());
         verify(cartRepository).save(cartCaptor.capture());
         assertEquals(cart, cartCaptor.getValue());
     }

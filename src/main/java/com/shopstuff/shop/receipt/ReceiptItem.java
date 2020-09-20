@@ -4,6 +4,7 @@ import com.shopstuff.shop.cart.CartItem;
 import com.shopstuff.shop.item.Item;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -17,6 +18,7 @@ public class ReceiptItem {
 
     @JoinColumn(name = "receiptId")
     @ManyToOne
+    @ToString.Exclude
     private Receipt receipt;
 
     @JoinColumn(name = "itemId")

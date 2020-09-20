@@ -20,7 +20,7 @@ create TABLE cart_item (
 );
 
 create TABLE receipt(
-    id INTEGER AUTO_INCREMENT PRIMARY KEY
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
     userId INTEGER NOT NULL,
     createdAt TIMESTAMP,
     totalPrice INTEGER

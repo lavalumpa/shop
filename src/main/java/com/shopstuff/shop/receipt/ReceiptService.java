@@ -6,6 +6,7 @@ import com.shopstuff.shop.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,18 +17,7 @@ public class ReceiptService {
 
     private final ReceiptRepository receiptRepository;
 
-    public Receipt purchaseCart(Cart cart, int totalPrice) {
-        var receipt = Receipt.builder()
-                .user(cart.getUser())
-                .totalPrice(totalPrice)
-                .build();
-        receipt.setReceiptItems(cart.getCartItems()
-                .stream()
-                .map(ReceiptItem::toReceiptItem)
-                .peek(x -> x.setReceipt(receipt))
-                .collect(Collectors.toList()));
-        return receiptRepository.save(receipt);
-    }
+
 
     public List<ReceiptDTO> receiptsByUser(User user) {
         return receiptRepository.findByUser(user).stream()
@@ -40,11 +30,16 @@ public class ReceiptService {
     }
 
 
-    public Receipt cartToReceipt(Cart cart) {
-        return Receipt.builder()
+    public Receipt createReceipt(Cart cart) {
+        var receipt= Receipt.builder()
                 .user(cart.getUser())
-                .receiptItems(cart.getCartItems().stream().map(ReceiptService::toReceiptItem).collect(Collectors.toList()))
                 .build();
+        receipt.setReceiptItems(cart.getCartItems().stream()
+                .map(ReceiptService::toReceiptItem)
+                .peek(x->x.setReceipt(receipt))
+                .collect(Collectors.toList()));
+        receipt.setTotalPrice(receiptTotalPrice(receipt));
+        return receiptRepository.save(receipt);
     }
 
     private static ReceiptItem toReceiptItem(CartItem cartItem) {
@@ -52,5 +47,11 @@ public class ReceiptService {
                 .item(cartItem.getItem())
                 .quantity(cartItem.getQuantity())
                 .build();
+    }
+    public int receiptTotalPrice(Receipt receipt){
+        return receipt.getReceiptItems()
+                .stream()
+                .mapToInt(x->x.getQuantity()*x.getItem().getPrice())
+                .sum();
     }
 }
