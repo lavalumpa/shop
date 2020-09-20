@@ -4,11 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,8 +26,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Size(min=1, max=50, message="Name must be 1 to 50 characters long")
     private String name;
+    @Email(message = "Email should be valid")
     private String email;
+    @Size(min=8, message="Password must have at least 8 characters")
     private String password;
     @CreatedDate
     private LocalDateTime createdAt;
