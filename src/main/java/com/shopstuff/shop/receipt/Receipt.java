@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class Receipt {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    @Positive(message ="Total price must be greater than 0")
     private int totalPrice;
 
     public void addReceiptItem(ReceiptItem receiptItem){
