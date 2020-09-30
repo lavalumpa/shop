@@ -2,6 +2,7 @@ package com.shopstuff.shop.item;
 
 
 import com.shopstuff.shop.exceptions.NotFoundException;
+import com.shopstuff.shop.item.viewed.ViewedItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,10 +23,13 @@ import java.net.URI;
 public class ItemController {
 
     private final ItemService itemService;
+    private final ViewedItemService viewedItemService;
 
     @GetMapping("/{id}")
-    public Item getItem(@PathVariable int id) {
-        return itemService.findById(id).orElseThrow(NotFoundException::new);
+    public Item getItem(@PathVariable int id, @RequestHeader(required = true)  int userId) {
+        var item= itemService.findById(id).orElseThrow(NotFoundException::new);
+        viewedItemService.itemViewed(userId,item);
+        return item;
     }
 
     @GetMapping

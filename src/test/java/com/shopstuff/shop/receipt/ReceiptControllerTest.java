@@ -30,40 +30,40 @@ public class ReceiptControllerTest {
     @Test
     public void testingShowReceiptWithGivenID() throws Exception{
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
-        var item= Item.builder().id(1).name("Phone").price(1000).build();
+        var item= Item.builder().name("Phone").price(1000).build();
         var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
         var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
         receipt.addReceiptItem(receiptItem);
         itemRepository.save(item);
-        userRepository.save(user);
-        receiptRepository.save(receipt);
-        mockMvc.perform(get("/receipt/{id}",1))
+        user=userRepository.save(user);
+        receipt=receiptRepository.save(receipt);
+        mockMvc.perform(get("/receipt/{id}",receipt.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.items[0].id").value(1))
+                .andExpect(jsonPath("$.id").value(receipt.getId()))
+                .andExpect(jsonPath("$.items[0].id").value(item.getId()))
                 .andExpect(jsonPath("$.items[0].price").value(1000))
                 .andExpect(jsonPath("$.items[0].quantity").value(2))
                 .andExpect(jsonPath("$.purchasedAt").exists())
-                .andExpect(jsonPath("$.purchasedBy").value(1));
+                .andExpect(jsonPath("$.purchasedBy").value(user.getId()));
     }
 
     @Test
     public void testingShowReceiptForUser() throws Exception{
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
-        var item= Item.builder().id(1).name("Phone").price(1000).build();
+        var item= Item.builder().name("Phone").price(1000).build();
         var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
         var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
         receipt.addReceiptItem(receiptItem);
         itemRepository.save(item);
-        userRepository.save(user);
+        user=userRepository.save(user);
         receiptRepository.save(receipt);
         mockMvc.perform(get("/user/{id}/receipt",1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].items[0].id").value(1))
+                .andExpect(jsonPath("$[0].items[0].id").value(item.getId()))
                 .andExpect(jsonPath("$[0].items[0].price").value(1000))
                 .andExpect(jsonPath("$[0].items[0].quantity").value(2))
                 .andExpect(jsonPath("$[0].purchasedAt").exists())
-                .andExpect(jsonPath("$[0].purchasedBy").value(1));
+                .andExpect(jsonPath("$[0].purchasedBy").value(user.getId()));
     }
 }

@@ -31,17 +31,19 @@ public class CartControllerTest {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+
     @Test
     public void testingShowCart() throws Exception{
         var cart = Cart.builder().build();
-        var item = Item.builder().id(1).name("Phone").price(7000).build();
+        var item = Item.builder().name("Phone").price(7000).build();
+        item=itemRepository.save(item);
         cart.addCartItem(CartItem.builder().item(item).quantity(2).build());
         cartRepository.save(cart);
         mockMvc.perform(get("/cart/{id}",cart.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(cart.getId()))
                 .andExpect(jsonPath("$.totalPrice").value(7000*2))
-                .andExpect(jsonPath("$.cartItems[0].id").value(1))
+                .andExpect(jsonPath("$.cartItems[0].id").value(item.getId()))
                 .andExpect(jsonPath("$.cartItems[0].quantity").value(2))
                 .andExpect(jsonPath("$.cartItems[0].totalPrice").value(item.getPrice()*2));
     }
@@ -71,20 +73,20 @@ public class CartControllerTest {
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
         userRepository.save(user);
         cart.setUser(user);
-        var item1=Item.builder().id(1).name("Phone").price(1000).build();
-        var item2=Item.builder().id(2).name("Headphones").price(400).build();
-        itemRepository.save(item1);
-        itemRepository.save(item2);
+        var item1=Item.builder().name("Phone").price(1000).build();
+        var item2=Item.builder().name("Headphones").price(400).build();
+        item1=itemRepository.save(item1);
+        item2=itemRepository.save(item2);
         cart.addCartItem(CartItem.builder().item(item1).quantity(2).build());
         cart.addCartItem(CartItem.builder().item(item2).quantity(5).build());
         cartRepository.save(cart);
         mockMvc.perform(post("/cart/{id}/purchase",cart.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.items[0].id").value(1))
+                .andExpect(jsonPath("$.items[0].id").value(item1.getId()))
                 .andExpect(jsonPath("$.items[0].price").value(1000))
                 .andExpect(jsonPath("$.items[0].quantity").value(2))
-                .andExpect(jsonPath("$.items[1].id").value(2))
+                .andExpect(jsonPath("$.items[1].id").value(item2.getId()))
                 .andExpect(jsonPath("$.items[1].price").value(400))
                 .andExpect(jsonPath("$.items[1].quantity").value(5))
                 .andExpect(jsonPath("$.purchasedAt").exists())

@@ -1,3 +1,4 @@
+
 create TABLE user (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -37,4 +38,11 @@ create TABLE item(
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     price INTEGER NOT NULL
+);
+
+create TABLE viewed_item(
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    userId INTEGER NOT NULL,
+    itemId INTEGER NOT NULL,
+    lastViewed TIMESTAMP
 );
