@@ -11,6 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,10 +27,12 @@ public class ViewedItem {
 
     @OneToOne
     @JoinColumn(name= "userId")
+    @NotNull(message = "User is required")
     private User user;
 
     @OneToOne
     @JoinColumn (name= "itemId")
+    @NotNull(message = "Item is required")
     private Item item;
 
     @LastModifiedDate

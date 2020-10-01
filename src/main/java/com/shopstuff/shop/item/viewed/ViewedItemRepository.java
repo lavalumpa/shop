@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ViewedItemRepository extends JpaRepository<ViewedItem,Integer> {
+
     Page<ViewedItem> findByUser(User user, Pageable pageable);
+
     Optional<ViewedItem> findByUserAndItem(User user, Item item);
 }

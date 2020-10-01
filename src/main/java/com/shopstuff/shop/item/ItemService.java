@@ -28,6 +28,10 @@ public class ItemService {
         return itemRepository.save(item);
     }
 
+    public Page<Item> searchByName(String name, Pageable pageable){
+        return itemRepository.findByNameContainingIgnoreCase(name,pageable);
+    }
+
     public Optional<Item> findById(int id){
         return itemRepository.findById(id);
     }

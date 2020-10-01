@@ -32,6 +32,11 @@ public class ItemController {
         return item;
     }
 
+    @GetMapping("/search")
+    public Page<Item> searchItems(@RequestParam(name="q") String name,@PageableDefault(size=10) Pageable pageable){
+        return itemService.searchByName(name,pageable);
+    }
+
     @GetMapping
     public Page<Item> allItems(@PageableDefault(size = 20) Pageable pageable) {
         return itemService.findAll(pageable);
@@ -42,6 +47,7 @@ public class ItemController {
         Item saved= itemService.saveItem(item);
         return ResponseEntity.created(URI.create("/item/"+ saved.getId())).body(item);
     }
+
 
     @PutMapping("{id}")
     public Item updateItem(@PathVariable int id, @RequestBody Item item) {

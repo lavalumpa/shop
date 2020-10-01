@@ -32,7 +32,7 @@ public class ItemControllerTest {
     private final ObjectMapper objectMapper= new ObjectMapper();
 
     @Test
-    public void testGetItemWhenItemIsFound() throws Exception {
+    public void testGetItemWhenItemIsFoundWithGivenId() throws Exception {
         Item item= Item.builder().name("Phone").price(7000).build();
         item=itemRepository.save(item);
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
@@ -45,6 +45,17 @@ public class ItemControllerTest {
     }
 
     @Test
+    public void TestGetAllItemsWhenThereIsOneItem() throws Exception{
+        Item item= Item.builder().name("Phone").price(7000).build();
+        item=itemRepository.save(item);
+        mockMvc.perform(get("/item"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value(item.getId()))
+                .andExpect(jsonPath("$.content[0].name").value(item.getName()))
+                .andExpect(jsonPath("$.content[0].price").value(item.getPrice()));
+    }
+
+    @Test
     public void testPostItemAndReturnBody() throws Exception{
         Item item= Item.builder().name("Phone").price(7000).build();
         String json= objectMapper.writeValueAsString(item);
@@ -54,6 +65,18 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.name").value(item.getName()))
                 .andExpect(jsonPath("$.price").value(item.getPrice()));
     }
+
+    @Test
+    public void testSearchItemWithGivenName() throws Exception{
+        Item item= Item.builder().name("Phone").price(7000).build();
+        item=itemRepository.save(item);
+        mockMvc.perform(get("/item/search").param("q","pho"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value(item.getId()))
+                .andExpect(jsonPath("$.content[0].name").value(item.getName()))
+                .andExpect(jsonPath("$.content[0].price").value(item.getPrice()));
+    }
+
 
     @Test
     public void testDeleteItem() throws Exception {
