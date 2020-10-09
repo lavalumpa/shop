@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -65,5 +65,36 @@ public class ReceiptControllerTest {
                 .andExpect(jsonPath("$[0].items[0].quantity").value(2))
                 .andExpect(jsonPath("$[0].purchasedAt").exists())
                 .andExpect(jsonPath("$[0].purchasedBy").value(user.getId()));
+    }
+
+    @Test
+    public void testForYearReportJson() throws Exception{
+        var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
+        var item= Item.builder().name("Phone").price(1000).build();
+        var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
+        var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
+        receipt.addReceiptItem(receiptItem);
+        item=itemRepository.save(item);
+        userRepository.save(user);
+        receiptRepository.save(receipt);
+        mockMvc.perform(get("/report").param("year","2020").header("Accept", MediaType.APPLICATION_JSON))
+                .andExpect(header().string("Content-type","application/json"))
+                .andExpect(jsonPath("$.items[0].id").value(item.getId()))
+                .andExpect(jsonPath("$.items[0].quantity").value(2))
+                .andExpect(jsonPath("$.year").value(2020))
+                .andExpect(jsonPath("$.revenue").value(1000*2));
+    }
+    @Test
+    public void testForYearReportPdf() throws Exception{
+        var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
+        var item= Item.builder().name("Phone").price(1000).build();
+        var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
+        var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
+        receipt.addReceiptItem(receiptItem);
+        itemRepository.save(item);
+        userRepository.save(user);
+        receiptRepository.save(receipt);
+        mockMvc.perform(get("/report").param("year","2020").header("Accept", MediaType.APPLICATION_PDF))
+                .andExpect(header().string("Content-type","application/pdf"));
     }
 }

@@ -17,7 +17,7 @@ import javax.validation.constraints.Positive;
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
     @NotBlank(message = "Can't be blank")
     private String name;
     @Positive(message = "Has to be higher than 0")

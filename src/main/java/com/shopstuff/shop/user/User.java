@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
     @Size(min=1, max=50, message="Name must be 1 to 50 characters long")
     private String name;
     @Email(message = "Email should be valid")
