@@ -11,10 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -33,6 +37,7 @@ public class CartControllerTest {
 
 
     @Test
+    @WithMockUser
     public void testingShowCart() throws Exception{
         var cart = Cart.builder().build();
         var item = Item.builder().name("Phone").price(7000).build();
@@ -49,6 +54,7 @@ public class CartControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testingAddItemToCart() throws Exception{
         var cart = Cart.builder().build();
         cartRepository.save(cart);
@@ -56,7 +62,7 @@ public class CartControllerTest {
         var item = Item.builder().name("Phone").price(2_000).build();
         itemRepository.save(item);
         String json = objectMapper.writeValueAsString(cartItemDto);
-        mockMvc.perform(post("/cart/{id}/item",cart.getId()).contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/cart/{id}/item",cart.getId()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -68,6 +74,7 @@ public class CartControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testingPurchaseWithTwoItems() throws Exception {
         var cart = Cart.builder().build();
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
@@ -80,7 +87,7 @@ public class CartControllerTest {
         cart.addCartItem(CartItem.builder().item(item1).quantity(2).build());
         cart.addCartItem(CartItem.builder().item(item2).quantity(5).build());
         cartRepository.save(cart);
-        mockMvc.perform(post("/cart/{id}/purchase",cart.getId()))
+        mockMvc.perform(post("/cart/{id}/purchase",cart.getId()).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.items[0].id").value(item1.getId()))

@@ -12,10 +12,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,6 +34,7 @@ public class ItemControllerTest {
     private final ObjectMapper objectMapper= new ObjectMapper();
 
     @Test
+    @WithMockUser
     public void testGetItemWhenItemIsFoundWithGivenId() throws Exception {
         Item item= Item.builder().name("Phone").price(7000).build();
         item=itemRepository.save(item);
@@ -45,6 +48,7 @@ public class ItemControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void TestGetAllItemsWhenThereIsOneItem() throws Exception{
         Item item= Item.builder().name("Phone").price(7000).build();
         item=itemRepository.save(item);
@@ -56,10 +60,11 @@ public class ItemControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testPostItemAndReturnBody() throws Exception{
         Item item= Item.builder().name("Phone").price(7000).build();
         String json= objectMapper.writeValueAsString(item);
-        mockMvc.perform(post("/item").contentType(MediaType.APPLICATION_JSON).content(json))
+        mockMvc.perform(post("/item").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("$.name").value(item.getName()))
@@ -67,6 +72,7 @@ public class ItemControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testSearchItemWithGivenName() throws Exception{
         Item item= Item.builder().name("Phone").price(7000).build();
         item=itemRepository.save(item);
@@ -79,22 +85,24 @@ public class ItemControllerTest {
 
 
     @Test
+    @WithMockUser
     public void testDeleteItem() throws Exception {
         Item item= Item.builder().name("Phone").price(7000).build();
         item=itemRepository.save(item);
-        mockMvc.perform(delete("/item/{id}", item.getId()))
+        mockMvc.perform(delete("/item/{id}", item.getId()).with(csrf()))
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$").doesNotExist());
     }
 
 
     @Test
+    @WithMockUser
     public void testPutUpdatingItemChangingTheItem()throws Exception {
         Item item= Item.builder().name("Phone").price(7000).build();
         item=itemRepository.save(item);
         Item updatedItem=Item.builder().name("Adapter").price(2000).build();;
         String json= objectMapper.writeValueAsString(updatedItem);
-        mockMvc.perform(put("/item/{id}",item.getId()).contentType(MediaType.APPLICATION_JSON).content(json))
+        mockMvc.perform(put("/item/{id}",item.getId()).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(item.getId()))
                 .andExpect(jsonPath("$.price").value(updatedItem.getPrice()))

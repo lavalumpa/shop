@@ -5,11 +5,13 @@ import com.shopstuff.shop.item.ItemRepository;
 import com.shopstuff.shop.user.User;
 import com.shopstuff.shop.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.With;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class ReceiptControllerTest {
     private final ItemRepository itemRepository;
 
     @Test
+    @WithMockUser
     public void testingShowReceiptWithGivenID() throws Exception{
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
         var item= Item.builder().name("Phone").price(1000).build();
@@ -48,6 +51,7 @@ public class ReceiptControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testingShowReceiptForUser() throws Exception{
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
         var item= Item.builder().name("Phone").price(1000).build();
@@ -68,6 +72,7 @@ public class ReceiptControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testForYearReportJson() throws Exception{
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
         var item= Item.builder().name("Phone").price(1000).build();
@@ -85,6 +90,7 @@ public class ReceiptControllerTest {
                 .andExpect(jsonPath("$.revenue").value(1000*2));
     }
     @Test
+    @WithMockUser
     public void testForYearReportPdf() throws Exception{
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
         var item= Item.builder().name("Phone").price(1000).build();

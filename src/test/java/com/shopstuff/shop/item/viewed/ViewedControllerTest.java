@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ public class ViewedControllerTest {
     private final ViewedItemRepository viewedItemRepository;
 
     @Test
+    @WithMockUser
     public void testRecentItemsByUserWithOneItemChecked() throws Exception {
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
         user=userRepository.save(user);
