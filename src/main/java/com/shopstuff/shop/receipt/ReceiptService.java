@@ -131,4 +131,12 @@ public class ReceiptService {
                 .mapToInt(x -> x.getQuantity() * x.getItem().getPrice())
                 .sum();
     }
+
+    public boolean correctUser(String username, int id){
+        return receiptRepository.findById(id)
+                .map(Receipt::getUser)
+                .map(User::getName)
+                .filter(x->x.equals(username))
+                .isPresent();
+    }
 }

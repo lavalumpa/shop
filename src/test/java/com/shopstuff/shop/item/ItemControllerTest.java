@@ -34,13 +34,13 @@ public class ItemControllerTest {
     private final ObjectMapper objectMapper= new ObjectMapper();
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "Steve")
     public void testGetItemWhenItemIsFoundWithGivenId() throws Exception {
         Item item= Item.builder().name("Phone").price(7000).build();
         item=itemRepository.save(item);
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
         user=userRepository.save(user);
-        mockMvc.perform(get("/item/{id}",item.getId()).header("userId",user.getId()))
+        mockMvc.perform(get("/item/{id}",item.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(item.getId()))
                 .andExpect(jsonPath("$.name").value(item.getName()))
@@ -60,7 +60,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     public void testPostItemAndReturnBody() throws Exception{
         Item item= Item.builder().name("Phone").price(7000).build();
         String json= objectMapper.writeValueAsString(item);
@@ -85,7 +85,7 @@ public class ItemControllerTest {
 
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     public void testDeleteItem() throws Exception {
         Item item= Item.builder().name("Phone").price(7000).build();
         item=itemRepository.save(item);
@@ -96,7 +96,7 @@ public class ItemControllerTest {
 
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "ADMIN")
     public void testPutUpdatingItemChangingTheItem()throws Exception {
         Item item= Item.builder().name("Phone").price(7000).build();
         item=itemRepository.save(item);
@@ -108,7 +108,6 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.price").value(updatedItem.getPrice()))
                 .andExpect(jsonPath("$.name").value(updatedItem.getName()));
     }
-
 
 
 }

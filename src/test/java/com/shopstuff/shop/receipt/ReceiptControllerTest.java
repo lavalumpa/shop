@@ -2,6 +2,7 @@ package com.shopstuff.shop.receipt;
 
 import com.shopstuff.shop.item.Item;
 import com.shopstuff.shop.item.ItemRepository;
+import com.shopstuff.shop.user.Role;
 import com.shopstuff.shop.user.User;
 import com.shopstuff.shop.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,9 +33,9 @@ public class ReceiptControllerTest {
     private final ItemRepository itemRepository;
 
     @Test
-    @WithMockUser
+    @WithMockUser(username =  "Steve", roles = "CUSTOMER")
     public void testingShowReceiptWithGivenID() throws Exception{
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
+        var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").roles(Set.of(Role.CUSTOMER)).build();
         var item= Item.builder().name("Phone").price(1000).build();
         var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
         var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
@@ -51,9 +54,9 @@ public class ReceiptControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username =  "Steve", roles = "CUSTOMER")
     public void testingShowReceiptForUser() throws Exception{
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
+        var user=User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.CUSTOMER)).password("4az5j@98gbmawq").build();
         var item= Item.builder().name("Phone").price(1000).build();
         var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
         var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
@@ -72,9 +75,9 @@ public class ReceiptControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles= "ADMIN")
     public void testForYearReportJson() throws Exception{
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
+        var user=User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
         var item= Item.builder().name("Phone").price(1000).build();
         var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
         var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
@@ -90,9 +93,9 @@ public class ReceiptControllerTest {
                 .andExpect(jsonPath("$.revenue").value(1000*2));
     }
     @Test
-    @WithMockUser
+    @WithMockUser(roles= "ADMIN")
     public void testForYearReportPdf() throws Exception{
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
+        var user=User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
         var item= Item.builder().name("Phone").price(1000).build();
         var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
         var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();

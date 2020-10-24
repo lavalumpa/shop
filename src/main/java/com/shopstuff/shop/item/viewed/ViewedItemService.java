@@ -3,12 +3,14 @@ package com.shopstuff.shop.item.viewed;
 
 import com.shopstuff.shop.exceptions.NotFoundException;
 import com.shopstuff.shop.item.Item;
+import com.shopstuff.shop.user.Role;
 import com.shopstuff.shop.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 
 
 @Service
@@ -17,11 +19,17 @@ public class ViewedItemService {
     private final UserService userService;
     private final ViewedItemRepository viewedItemRepository;
 
-    public void itemViewed(int userId, Item item) {
-        var user = userService.findById(userId).orElseThrow(NotFoundException::new);
+    public void itemViewed(String name, Item item) {
+        var user = userService.findByName(name).orElseThrow(NotFoundException::new);
+        if (!user.getRoles().contains(Role.CUSTOMER)) {
+            return;
+        }
         viewedItemRepository.findByUserAndItem(user, item).ifPresentOrElse(
-                viewedItemRepository::save, () -> {
-                    var viewedItem = ViewedItem.builder().item(item).user(user).build();
+                x -> {
+                    x.setLastViewed(LocalDateTime.now());
+                    viewedItemRepository.save(x);
+                }, () -> {
+                    var viewedItem = ViewedItem.builder().item(item).user(user).lastViewed(LocalDateTime.now()).build();
                     viewedItemRepository.save(viewedItem);
                 }
         );

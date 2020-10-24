@@ -30,7 +30,7 @@ public class ViewedControllerTest {
     private final ViewedItemRepository viewedItemRepository;
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "Steve",roles = "CUSTOMER")
     public void testRecentItemsByUserWithOneItemChecked() throws Exception {
         var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
         user=userRepository.save(user);

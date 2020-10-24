@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.net.URI;
+import java.security.Principal;
 
 
 @RestController
@@ -27,10 +28,11 @@ public class ItemController {
     private final ItemService itemService;
     private final ViewedItemService viewedItemService;
 
+
     @GetMapping("/{id}")
-    public Item getItem(@PathVariable int id, @RequestHeader(required = true)  int userId) {
+    public Item getItem(@PathVariable int id, Principal principal) {
         var item= itemService.findById(id).orElseThrow(NotFoundException::new);
-        viewedItemService.itemViewed(userId,item);
+        viewedItemService.itemViewed(principal.getName(),item);
         return item;
     }
 
@@ -45,6 +47,7 @@ public class ItemController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Item> addItem(@RequestBody Item item) {
         Item saved= itemService.saveItem(item);
         return ResponseEntity.created(URI.create("/item/"+ saved.getId())).body(item);
@@ -52,6 +55,7 @@ public class ItemController {
 
 
     @PutMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Item updateItem(@PathVariable int id, @RequestBody Item item) {
         if (itemService.existsById(id)) {
             item.setId(id);
@@ -60,6 +64,7 @@ public class ItemController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable int id){
         itemService.deleteById(id);

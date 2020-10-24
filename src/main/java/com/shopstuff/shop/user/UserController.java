@@ -3,6 +3,7 @@ package com.shopstuff.shop.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,8 +20,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> addUser(@Valid @RequestBody  User user) {
-        userService.saveUser(user);
+    @PreAuthorize("hasRole('ADMIN') or isAnonymous()")
+    public ResponseEntity<User> addCustomer(@Valid @RequestBody  User user) {
+        userService.saveCustomer(user);
         return ResponseEntity.created(URI.create("/user/" + user.getId())).body(user);
     }
 

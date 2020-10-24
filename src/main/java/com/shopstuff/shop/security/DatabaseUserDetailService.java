@@ -19,10 +19,16 @@ public class DatabaseUserDetailService implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String username){
-        User user=userRepository.findByName(username)
-                .orElseThrow(()->new UsernameNotFoundException(username));
+    public UserDetails loadUserByUsername(String username) {
+        User user = userRepository.findByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getName()).password("{noop}"+user.getPassword()).roles("USER").build();
+                .username(user.getName())
+                .password("{noop}" + user.getPassword())
+                .roles(user.getRoles()
+                        .stream()
+                        .map(Enum::toString)
+                        .toArray(String[]::new))
+                .build();
     }
 }

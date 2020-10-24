@@ -2,6 +2,7 @@ package com.shopstuff.shop.item.viewed;
 
 import com.shopstuff.shop.exceptions.NotFoundException;
 import com.shopstuff.shop.item.Item;
+import com.shopstuff.shop.user.Role;
 import com.shopstuff.shop.user.User;
 import com.shopstuff.shop.user.UserService;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -50,17 +52,17 @@ public class ViewedServiceTest {
 
     @Test
     public void testItemViewed() {
-        when(userService.findById(eq(1))).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> viewedItemService.itemViewed(1, Item.builder().build()));
+        when(userService.findByName(eq("steve"))).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> viewedItemService.itemViewed("steve", Item.builder().build()));
     }
 
     @Test
     public void testViewedItemWhenItemWasNotViewedByUser() {
-        var user=User.builder().id(1).build();
-        when(userService.findById(eq(1))).thenReturn(Optional.of(user));
+        var user=User.builder().id(1).name("steve").roles(Set.of(Role.CUSTOMER)).build();
+        when(userService.findByName(eq("steve"))).thenReturn(Optional.of(user));
         var item=Item.builder().id(1).name("phone").price(700).build();
         when(viewedItemRepository.findByUserAndItem(eq(user),eq(item))).thenReturn(Optional.empty());
-        viewedItemService.itemViewed(1,item);
+        viewedItemService.itemViewed("steve",item);
         verify(viewedItemRepository).save(captor.capture());
         assertEquals(captor.getValue().getItem(),item);
         assertEquals(captor.getValue().getUser(),user);
@@ -69,12 +71,12 @@ public class ViewedServiceTest {
 
     @Test
     public void testViewedItemWhenItemWasViewedByUser() {
-        var user=User.builder().id(1).build();
-        when(userService.findById(eq(1))).thenReturn(Optional.of(user));
+        var user=User.builder().id(1).name("steve").roles(Set.of(Role.CUSTOMER)).build();
+        when(userService.findByName(eq("steve"))).thenReturn(Optional.of(user));
         var item=Item.builder().id(1).name("phone").price(700).build();
         var viewedItem=ViewedItem.builder().user(user).item(item).build();
         when(viewedItemRepository.findByUserAndItem(eq(user),eq(item))).thenReturn(Optional.of(viewedItem));
-        viewedItemService.itemViewed(1,item);
+        viewedItemService.itemViewed("steve",item);
         verify(viewedItemRepository).save(captor.capture());
         assertEquals(captor.getValue().getItem(),item);
         assertEquals(captor.getValue().getUser(),user);

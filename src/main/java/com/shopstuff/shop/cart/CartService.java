@@ -24,7 +24,7 @@ public class CartService {
     @Transactional
     public Receipt purchase(int id) {
         var cart = cartRepository.findById(id).orElseThrow(NotFoundException::new);
-        var receipt=receiptService.createReceipt(cart);
+        var receipt = receiptService.createReceipt(cart);
         cart.clear();
         cartRepository.save(cart);
         return receipt;
@@ -61,5 +61,14 @@ public class CartService {
         return cartRepository.findById(id).orElseThrow(NotFoundException::new).getCartItems()
                 .stream().map((x) -> x.getQuantity() * x.getItem().getPrice()).reduce(Integer::sum).orElse(0);
     }
+
+    public boolean correctUser(String userName, int id) {
+        return cartRepository.findById(id)
+                .map(Cart::getUser)
+                .map(User::getName)
+                .filter(x -> x.equals(userName))
+                .isPresent();
+    }
+
 
 }

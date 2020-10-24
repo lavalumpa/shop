@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "viewed_item")
 public class ViewedItem {
     @Id
@@ -36,6 +35,5 @@ public class ViewedItem {
     @NotNull(message = "Item is required")
     private Item item;
 
-    @LastModifiedDate
     private LocalDateTime lastViewed;
 }

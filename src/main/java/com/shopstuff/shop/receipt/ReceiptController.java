@@ -7,6 +7,7 @@ import com.shopstuff.shop.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,11 +27,13 @@ public class ReceiptController {
     private final UserService userService;
 
     @GetMapping("user/{id}/receipt")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @userService.correctUser(principal.username,#id))")
     public List<ReceiptDTO> getUserReceipts(@PathVariable int id) {
         var user = userService.findById(id).orElseThrow(NotFoundException::new);
         return receiptService.receiptsByUser(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @receiptService.correctUser(principal.username,#id))")
     @GetMapping("receipt/{id}")
     public ReceiptDTO getReceipt(@PathVariable int id) {
         var receipt = receiptService.findById(id).orElseThrow(NotFoundException::new);
@@ -38,12 +41,14 @@ public class ReceiptController {
     }
 
     @GetMapping(value = "/report", headers = {"accept=application/json"}, produces = {"application/json"})
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ReportDTO> getReportJSON(@PathParam("year") @PastOrPresent(message = "Year has to be present or past") Year year) {
         var report = receiptService.yearlyReport(year);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ReportDTO.toDTO(report));
     }
 
     @GetMapping(value = "/report", headers = {"accept=application/pdf"}, produces = {"application/pdf"})
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<byte[]> getReportPDF(@PathParam("year") @PastOrPresent(message = "Year has to be present or past") Year year) {
         var report = receiptService.yearlyReport(year);
         var pdf = receiptService.reportToPdf(report);

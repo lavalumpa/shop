@@ -3,6 +3,7 @@ package com.shopstuff.shop.cart;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shopstuff.shop.item.Item;
 import com.shopstuff.shop.item.ItemRepository;
+import com.shopstuff.shop.user.Role;
 import com.shopstuff.shop.user.User;
 import com.shopstuff.shop.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -37,9 +38,9 @@ public class CartControllerTest {
 
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "CUSTOMER", username = "steve")
     public void testingShowCart() throws Exception{
-        var cart = Cart.builder().build();
+        var cart = Cart.builder().user(User.builder().name("steve").build()).build();
         var item = Item.builder().name("Phone").price(7000).build();
         item=itemRepository.save(item);
         cart.addCartItem(CartItem.builder().item(item).quantity(2).build());
@@ -54,9 +55,9 @@ public class CartControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "CUSTOMER", username = "steve")
     public void testingAddItemToCart() throws Exception{
-        var cart = Cart.builder().build();
+        var cart = Cart.builder().user(User.builder().name("steve").build()).build();
         cartRepository.save(cart);
         var cartItemDto=CartItemDTO.builder().itemId(1).quantity(5).build();
         var item = Item.builder().name("Phone").price(2_000).build();
@@ -74,10 +75,11 @@ public class CartControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "CUSTOMER", username = "steve")
     public void testingPurchaseWithTwoItems() throws Exception {
         var cart = Cart.builder().build();
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
+        var role=Role.valueOf("CUSTOMER");
+        var user=User.builder().name("steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").roles(Set.of(role)).build();
         userRepository.save(user);
         cart.setUser(user);
         var item1=Item.builder().name("Phone").price(1000).build();
