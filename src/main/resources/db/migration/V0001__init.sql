@@ -1,5 +1,5 @@
 
-create TABLE user (
+create TABLE IF NOT EXISTS user (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR (100) NOT NULL UNIQUE,
@@ -8,39 +8,39 @@ create TABLE user (
     lastModifiedAt TIMESTAMP
 );
 
-create TABLE cart (
+create TABLE IF NOT EXISTS cart (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     userId INTEGER NOT NULL
 );
 
-create TABLE cart_item (
+create TABLE IF NOT EXISTS cart_item (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     cartId INTEGER NOT NULL,
     itemId INTEGER NOT NULL,
     quantity INTEGER NOT NULL
 );
 
-create TABLE receipt(
+create TABLE IF NOT EXISTS receipt(
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     userId INTEGER NOT NULL,
     createdAt TIMESTAMP,
     totalPrice INTEGER
 );
 
-create TABLE receipt_item(
+create TABLE IF NOT EXISTS receipt_item(
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     receiptID INTEGER NOT NULL,
     itemID INTEGER NOT NULL,
     quantity INTEGER NOT NULL
 );
 
-create TABLE item(
+create TABLE IF NOT EXISTS item(
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     price INTEGER NOT NULL
 );
 
-create TABLE viewed_item(
+create TABLE IF NOT EXISTS viewed_item(
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     userId INTEGER NOT NULL,
     itemId INTEGER NOT NULL,
