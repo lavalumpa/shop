@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,5 +31,11 @@ public class ReceiptDTO {
                 .map(ReceiptItemDTO::toDTO)
                 .collect(Collectors.toList()));
         return receiptDTO;
+    }
+
+    public static List<ReceiptDTO> listToDTO(List<Receipt> receipt){
+        return receipt.stream()
+                .map(ReceiptDTO::toDTO)
+                .collect(Collectors.toList());
     }
 }

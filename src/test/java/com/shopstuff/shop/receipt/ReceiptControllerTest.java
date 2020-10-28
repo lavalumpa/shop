@@ -64,9 +64,9 @@ public class ReceiptControllerTest {
         itemRepository.save(item);
         user=userRepository.save(user);
         receiptRepository.save(receipt);
-        mockMvc.perform(get("/user/{id}/receipt",1))
+        mockMvc.perform(get("/user/{id}/receipt",user.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].id").value(user.getId()))
                 .andExpect(jsonPath("$[0].items[0].id").value(item.getId()))
                 .andExpect(jsonPath("$[0].items[0].price").value(1000))
                 .andExpect(jsonPath("$[0].items[0].quantity").value(2))
@@ -104,6 +104,34 @@ public class ReceiptControllerTest {
         userRepository.save(user);
         receiptRepository.save(receipt);
         mockMvc.perform(get("/report").param("year","2020").header("Accept", MediaType.APPLICATION_PDF))
+                .andExpect(header().string("Content-type","application/pdf"));
+    }
+    @Test
+    @WithMockUser(roles= "ADMIN")
+    public void testForUserSpecificReceiptPdf() throws Exception{
+        var user=User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
+        var item= Item.builder().name("Phone").price(1000).build();
+        var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
+        var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
+        receipt.addReceiptItem(receiptItem);
+        itemRepository.save(item);
+        userRepository.save(user);
+        receipt=receiptRepository.save(receipt);
+        mockMvc.perform(get("/receipt/{id}",receipt.getId()).header("Accept", MediaType.APPLICATION_PDF))
+                .andExpect(header().string("Content-type","application/pdf"));
+    }
+    @Test
+    @WithMockUser(roles= "ADMIN")
+    public void testForUserPdfAllReceipts() throws Exception{
+        var user=User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
+        var item= Item.builder().name("Phone").price(1000).build();
+        var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
+        var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
+        receipt.addReceiptItem(receiptItem);
+        itemRepository.save(item);
+        user=userRepository.save(user);
+        receiptRepository.save(receipt);
+        mockMvc.perform(get("/user/{id}/receipt",user.getId()).header("Accept", MediaType.APPLICATION_PDF))
                 .andExpect(header().string("Content-type","application/pdf"));
     }
 }

@@ -39,7 +39,7 @@ public class ReceiptServiceTest {
     public void testingIfNoReceiptsByUser() {
         var user = User.builder().id(1).name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
         when(receiptRepository.findByUser(user)).thenReturn(new ArrayList<>());
-        assertTrue(receiptService.receiptsByUser(user).isEmpty());
+        assertTrue(receiptService.receiptByUser(user).isEmpty());
     }
 
     @Test
@@ -54,9 +54,9 @@ public class ReceiptServiceTest {
         receipt1.setTotalPrice(1000);
         receipt1.addReceiptItem(receiptItem1);
         when(receiptRepository.findByUser(user)).thenReturn(List.of(receipt1, receipt2));
-        var receiptDTOList = receiptService.receiptsByUser(user);
-        assertEquals(ReceiptDTO.toDTO(receipt1), receiptDTOList.get(0));
-        assertEquals(ReceiptDTO.toDTO(receipt2), receiptDTOList.get(1));
+        var receiptList = receiptService.receiptByUser(user);
+        assertEquals(receipt1, receiptList.get(0));
+        assertEquals(receipt2, receiptList.get(1));
     }
 
     @Test

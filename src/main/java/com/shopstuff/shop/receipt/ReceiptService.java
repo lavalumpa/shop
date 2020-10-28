@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,20 +58,60 @@ public class ReceiptService {
         PdfWriter.getInstance(document, baos);
         document.open();
         Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
-        Paragraph items=new Paragraph("Items sold:", font);
+        Paragraph items = new Paragraph("Items sold:", font);
         PdfPTable table = new PdfPTable(4);
-        setItemTableHeaders(table);
-        addItemsToTable(table, report);
+        setReportItemTableHeaders(table);
+        addReportItemsToTable(table, report);
         items.add(table);
-        items.add(new Paragraph("Revenue: " + report.getRevenue().toString() , font));
+        items.add(new Paragraph("Revenue: " + report.getRevenue().toString(), font));
         items.add(new Paragraph("Year: " + report.getYear().toString(), font));
         document.add(items);
         document.close();
         return baos.toByteArray();
     }
 
+    @SneakyThrows(DocumentException.class)
+    public byte[] receiptToPdf(Receipt receipt) {
+        Document document = new Document();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PdfWriter.getInstance(document, baos);
+        document.open();
+        document.add(new Paragraph("User: " + receipt.getUser().getName()));
+        addOneReceiptToDocument(document, receipt);
+        document.close();
+        return baos.toByteArray();
+    }
 
-    private void setItemTableHeaders(PdfPTable table) {
+    @SneakyThrows(DocumentException.class)
+    public byte[] receiptListToPdf(List<Receipt> receipts) {
+        Document document = new Document();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PdfWriter.getInstance(document, baos);
+        document.open();
+        for (Receipt r : receipts) {
+            addOneReceiptToDocument(document, r);
+            document.newPage();
+        }
+        if (!receipts.isEmpty()) {
+            document.add(new Paragraph("User: " + receipts.get(0).getUser().getName()));
+        }
+        document.close();
+        return baos.toByteArray();
+    }
+
+    @SneakyThrows(DocumentException.class)
+    private void addOneReceiptToDocument(Document document, Receipt receipt) {
+        Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
+        Paragraph paragraph = new Paragraph("Items purchased: ", font);
+        PdfPTable table = new PdfPTable(4);
+        setReportItemTableHeaders(table);
+        addReceiptItemsToTable(table, receipt);
+        paragraph.add(table);
+        document.add(paragraph);
+        document.add(new Paragraph("Date: " + receipt.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), font));
+    }
+
+    private void setReportItemTableHeaders(PdfPTable table) {
         var headerNames = new ArrayList<String>();
         headerNames.add("item id");
         headerNames.add("item name");
@@ -85,7 +126,7 @@ public class ReceiptService {
         }
     }
 
-    private void addItemsToTable(PdfPTable pdfPTable, Report report) {
+    private void addReportItemsToTable(PdfPTable pdfPTable, Report report) {
         for (ReportItem r : report.getReportItemList()) {
             pdfPTable.addCell(String.valueOf(r.getItem().getId()));
             pdfPTable.addCell(r.getItem().getName());
@@ -94,12 +135,19 @@ public class ReceiptService {
         }
     }
 
-
-    public List<ReceiptDTO> receiptsByUser(User user) {
-        return receiptRepository.findByUser(user).stream()
-                .map(ReceiptDTO::toDTO)
-                .collect(Collectors.toList());
+    private void addReceiptItemsToTable(PdfPTable pdfPTable, Receipt receipt) {
+        for (ReceiptItem r : receipt.getReceiptItems()) {
+            pdfPTable.addCell(String.valueOf(r.getItem().getId()));
+            pdfPTable.addCell(r.getItem().getName());
+            pdfPTable.addCell(String.valueOf(r.getItem().getPrice()));
+            pdfPTable.addCell(String.valueOf(r.getQuantity()));
+        }
     }
+
+    public List<Receipt> receiptByUser(User user) {
+        return receiptRepository.findByUser(user);
+    }
+
 
     public Optional<Receipt> findById(int id) {
         return receiptRepository.findById(id);
@@ -132,11 +180,11 @@ public class ReceiptService {
                 .sum();
     }
 
-    public boolean correctUser(String username, int id){
+    public boolean correctUser(String username, int id) {
         return receiptRepository.findById(id)
                 .map(Receipt::getUser)
                 .map(User::getName)
-                .filter(x->x.equals(username))
+                .filter(x -> x.equals(username))
                 .isPresent();
     }
 }
