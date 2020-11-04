@@ -64,7 +64,8 @@ public class ItemControllerTest {
     public void testPostItemAndReturnBody() throws Exception{
         Item item= Item.builder().name("Phone").price(7000).build();
         String json= objectMapper.writeValueAsString(item);
-        mockMvc.perform(post("/item").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(json))
+        mockMvc.perform(post("/item").with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("$.name").value(item.getName()))

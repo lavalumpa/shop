@@ -1,6 +1,9 @@
 package com.shopstuff.shop.cart;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shopstuff.shop.delivery.Address;
+import com.shopstuff.shop.delivery.DeliveryDTO;
+import com.shopstuff.shop.delivery.DeliveryRepository;
 import com.shopstuff.shop.item.Item;
 import com.shopstuff.shop.item.ItemRepository;
 import com.shopstuff.shop.user.Role;
@@ -18,7 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,6 +41,7 @@ public class CartControllerTest {
     private final ObjectMapper objectMapper;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final DeliveryRepository deliveryRepository;
 
 
     @Test
@@ -47,7 +54,7 @@ public class CartControllerTest {
         cartRepository.save(cart);
         mockMvc.perform(get("/cart/{id}",cart.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(cart.getId()))
+                .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.totalPrice").value(7000*2))
                 .andExpect(jsonPath("$.cartItems[0].id").value(item.getId()))
                 .andExpect(jsonPath("$.cartItems[0].quantity").value(2))
@@ -66,7 +73,7 @@ public class CartControllerTest {
         mockMvc.perform(post("/cart/{id}/item",cart.getId()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.totalPrice").value(10_000))
                 .andExpect(jsonPath("$.cartItems[0].totalPrice").value(item.getPrice()*5))
                 .andExpect(jsonPath("$.cartItems[0].quantity").value(cartItemDto.getQuantity()))
@@ -76,11 +83,11 @@ public class CartControllerTest {
 
     @Test
     @WithMockUser(roles = "CUSTOMER", username = "steve")
-    public void testingPurchaseWithTwoItems() throws Exception {
+    public void testingPurchaseWithTwoItemsWithNoDelivery() throws Exception {
         var cart = Cart.builder().build();
         var role=Role.valueOf("CUSTOMER");
         var user=User.builder().name("steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").roles(Set.of(role)).build();
-        userRepository.save(user);
+        user=userRepository.save(user);
         cart.setUser(user);
         var item1=Item.builder().name("Phone").price(1000).build();
         var item2=Item.builder().name("Headphones").price(400).build();
@@ -89,9 +96,10 @@ public class CartControllerTest {
         cart.addCartItem(CartItem.builder().item(item1).quantity(2).build());
         cart.addCartItem(CartItem.builder().item(item2).quantity(5).build());
         cartRepository.save(cart);
-        mockMvc.perform(post("/cart/{id}/purchase",cart.getId()).with(csrf()))
+        mockMvc.perform(post("/cart/{id}/purchase",cart.getId()).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content("{\"deliver\": false}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.items[0].id").value(item1.getId()))
                 .andExpect(jsonPath("$.items[0].price").value(1000))
                 .andExpect(jsonPath("$.items[0].quantity").value(2))
@@ -99,9 +107,51 @@ public class CartControllerTest {
                 .andExpect(jsonPath("$.items[1].price").value(400))
                 .andExpect(jsonPath("$.items[1].quantity").value(5))
                 .andExpect(jsonPath("$.purchasedAt").exists())
-                .andExpect(jsonPath("$.purchasedBy").value(1))
+                .andExpect(jsonPath("$.purchasedBy").value(user.getId()))
                 .andExpect(jsonPath("$.totalPrice").value(1000*2+5*400));
+        assertTrue(deliveryRepository.findAll().isEmpty());
         assertEquals(0,cart.getCartItems().size());
+    }
+
+    @Test
+    @WithMockUser(roles = "CUSTOMER", username = "steve")
+    public void testingPurchaseWithTwoItemsWitDelivery() throws Exception {
+        var cart = Cart.builder().build();
+        var role = Role.valueOf("CUSTOMER");
+        var user = User.builder().name("steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").roles(Set.of(role)).build();
+        user=userRepository.save(user);
+        cart.setUser(user);
+        var item1 = Item.builder().name("Phone").price(1000).build();
+        var item2 = Item.builder().name("Headphones").price(400).build();
+        item1 = itemRepository.save(item1);
+        item2 = itemRepository.save(item2);
+        cart.addCartItem(CartItem.builder().item(item1).quantity(2).build());
+        cart.addCartItem(CartItem.builder().item(item2).quantity(5).build());
+        cartRepository.save(cart);
+        var deliveryDTO = DeliveryDTO.builder().deliveryRequested(true)
+                .address(Address.builder()
+                        .city("Belgrade")
+                        .number(17)
+                        .street("Sazonova").build()).build();
+        String json=objectMapper.writeValueAsString(deliveryDTO);
+        mockMvc.perform(post("/cart/{id}/purchase", cart.getId()).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.items[0].id").value(item1.getId()))
+                .andExpect(jsonPath("$.items[0].price").value(1000))
+                .andExpect(jsonPath("$.items[0].quantity").value(2))
+                .andExpect(jsonPath("$.items[1].id").value(item2.getId()))
+                .andExpect(jsonPath("$.items[1].price").value(400))
+                .andExpect(jsonPath("$.items[1].quantity").value(5))
+                .andExpect(jsonPath("$.purchasedAt").exists())
+                .andExpect(jsonPath("$.purchasedBy").value(user.getId()))
+                .andExpect(jsonPath("$.totalPrice").value(1000 * 2 + 5 * 400));
+        var delivery=deliveryRepository.findAll().get(0);
+        assertThat("Belgrade").isEqualTo(delivery.getCity());
+        assertThat("Sazonova").isEqualToIgnoringCase(delivery.getStreet());
+        assertThat(17).isEqualTo(delivery.getNumber());
+        assertTrue(cart.getCartItems().isEmpty());
     }
 
 }

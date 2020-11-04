@@ -24,12 +24,10 @@ public class ViewedItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @OneToOne
     @JoinColumn(name= "userId")
     @NotNull(message = "User is required")
     private User user;
-
     @OneToOne
     @JoinColumn (name= "itemId")
     @NotNull(message = "Item is required")

@@ -51,7 +51,7 @@ public class CartServiceTest {
     }
 
     @Test
-    public void TestEmptyCart() {
+    public void testEmptyCart() {
         Cart cart = Cart.builder().id(1).build();
         when(cartRepository.findById(eq(1))).thenReturn((Optional.of(cart)));
         assertEquals(0, cartService.totalPrice(1));

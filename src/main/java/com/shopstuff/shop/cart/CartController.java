@@ -1,8 +1,11 @@
 package com.shopstuff.shop.cart;
 
 
+import com.shopstuff.shop.delivery.DeliveryDTO;
+import com.shopstuff.shop.delivery.DeliveryService;
 import com.shopstuff.shop.receipt.ReceiptDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,14 +18,22 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
 
     private final CartService cartService;
-
+    private final DeliveryService deliveryService;
 
 
     @PostMapping("{id}/purchase")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @cartService.correctUser(principal.username,#id))")
-    public ReceiptDTO purchase(@PathVariable int id) {
+    public ResponseEntity<ReceiptDTO> purchase(@PathVariable int id, @RequestBody DeliveryDTO deliveryDTO) {
+        var cart=cartService.showCart(id);
+        if (deliveryDTO.isDeliveryRequested()){
+            if (deliveryDTO.infoProvided()){
+                deliveryService.createDelivery(cart, deliveryDTO);
+            } else {
+                return ResponseEntity.badRequest().build();
+            }
+        }
         var receipt=cartService.purchase(id);
-        return ReceiptDTO.toDTO(receipt);
+        return ResponseEntity.ok(ReceiptDTO.toDTO(receipt));
     }
 
     @GetMapping("{id}")
