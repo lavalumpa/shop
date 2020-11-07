@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shopstuff.shop.delivery.Address;
 import com.shopstuff.shop.delivery.DeliveryDTO;
 import com.shopstuff.shop.delivery.DeliveryRepository;
+import com.shopstuff.shop.delivery.weather.WeatherDTO;
 import com.shopstuff.shop.item.Item;
 import com.shopstuff.shop.item.ItemRepository;
 import com.shopstuff.shop.user.Role;
@@ -14,20 +15,29 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
@@ -36,12 +46,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class CartControllerTest {
 
+
     private final MockMvc mockMvc;
     private final CartRepository cartRepository;
     private final ObjectMapper objectMapper;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final DeliveryRepository deliveryRepository;
+    @MockBean
+    private RestTemplate restTemplate;
+
 
 
     @Test
@@ -128,12 +142,20 @@ public class CartControllerTest {
         cart.addCartItem(CartItem.builder().item(item1).quantity(2).build());
         cart.addCartItem(CartItem.builder().item(item2).quantity(5).build());
         cartRepository.save(cart);
+        var weatherDTO=new WeatherDTO();
+        var weather=new WeatherDTO.WeatherInfoDTO.Weather();
+        weather.setMain("Rain");
+        var weatherInfo= new WeatherDTO.WeatherInfoDTO();
+        weatherInfo.setWeather(List.of(weather));
+        weatherInfo.setForecastTime(LocalDateTime.now());
+        weatherDTO.setWeatherInfoList(List.of(weatherInfo));
         var deliveryDTO = DeliveryDTO.builder().deliveryRequested(true)
                 .address(Address.builder()
                         .city("Belgrade")
                         .number(17)
                         .street("Sazonova").build()).build();
         String json=objectMapper.writeValueAsString(deliveryDTO);
+        when(restTemplate.getForObject(anyString(),eq(WeatherDTO.class))).thenReturn(weatherDTO);
         mockMvc.perform(post("/cart/{id}/purchase", cart.getId()).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isOk())
@@ -151,6 +173,7 @@ public class CartControllerTest {
         assertThat("Belgrade").isEqualTo(delivery.getCity());
         assertThat("Sazonova").isEqualToIgnoringCase(delivery.getStreet());
         assertThat(17).isEqualTo(delivery.getNumber());
+        assertThat(LocalDate.now().plusDays(2)).isEqualTo(delivery.getEstimatedDate());
         assertTrue(cart.getCartItems().isEmpty());
     }
 

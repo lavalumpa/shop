@@ -6,7 +6,6 @@ import com.shopstuff.shop.user.Role;
 import com.shopstuff.shop.user.User;
 import com.shopstuff.shop.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.With;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,17 +32,17 @@ public class ReceiptControllerTest {
     private final ItemRepository itemRepository;
 
     @Test
-    @WithMockUser(username =  "Steve", roles = "CUSTOMER")
-    public void testingShowReceiptWithGivenID() throws Exception{
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").roles(Set.of(Role.CUSTOMER)).build();
-        var item= Item.builder().name("Phone").price(1000).build();
-        var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
-        var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
+    @WithMockUser(username = "Steve", roles = "CUSTOMER")
+    public void testingShowReceiptWithGivenID() throws Exception {
+        var user = User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").roles(Set.of(Role.CUSTOMER)).build();
+        var item = Item.builder().name("Phone").price(1000).build();
+        var receiptItem = ReceiptItem.builder().item(item).quantity(2).build();
+        var receipt = Receipt.builder().totalPrice(1000 * 2).user(user).build();
         receipt.addReceiptItem(receiptItem);
         itemRepository.save(item);
-        user=userRepository.save(user);
-        receipt=receiptRepository.save(receipt);
-        mockMvc.perform(get("/receipt/{id}",receipt.getId()))
+        user = userRepository.save(user);
+        receipt = receiptRepository.save(receipt);
+        mockMvc.perform(get("/receipt/{id}", receipt.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(receipt.getId()))
                 .andExpect(jsonPath("$.items[0].id").value(item.getId()))
@@ -54,17 +53,17 @@ public class ReceiptControllerTest {
     }
 
     @Test
-    @WithMockUser(username =  "Steve", roles = "CUSTOMER")
-    public void testingShowReceiptForUser() throws Exception{
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.CUSTOMER)).password("4az5j@98gbmawq").build();
-        var item= Item.builder().name("Phone").price(1000).build();
-        var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
-        var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
+    @WithMockUser(username = "Steve", roles = "CUSTOMER")
+    public void testingShowReceiptForUser() throws Exception {
+        var user = User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.CUSTOMER)).password("4az5j@98gbmawq").build();
+        var item = Item.builder().name("Phone").price(1000).build();
+        var receiptItem = ReceiptItem.builder().item(item).quantity(2).build();
+        var receipt = Receipt.builder().totalPrice(1000 * 2).user(user).build();
         receipt.addReceiptItem(receiptItem);
         itemRepository.save(item);
-        user=userRepository.save(user);
+        user = userRepository.save(user);
         receiptRepository.save(receipt);
-        mockMvc.perform(get("/user/{id}/receipt",user.getId()))
+        mockMvc.perform(get("/user/{id}/receipt", user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(user.getId()))
                 .andExpect(jsonPath("$[0].items[0].id").value(item.getId()))
@@ -75,63 +74,66 @@ public class ReceiptControllerTest {
     }
 
     @Test
-    @WithMockUser(roles= "ADMIN")
-    public void testForYearReportJson() throws Exception{
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
-        var item= Item.builder().name("Phone").price(1000).build();
-        var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
-        var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
+    @WithMockUser(roles = "ADMIN")
+    public void testForYearReportJson() throws Exception {
+        var user = User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
+        var item = Item.builder().name("Phone").price(1000).build();
+        var receiptItem = ReceiptItem.builder().item(item).quantity(2).build();
+        var receipt = Receipt.builder().totalPrice(1000 * 2).user(user).build();
         receipt.addReceiptItem(receiptItem);
-        item=itemRepository.save(item);
+        item = itemRepository.save(item);
         userRepository.save(user);
         receiptRepository.save(receipt);
-        mockMvc.perform(get("/report").param("year","2020").header("Accept", MediaType.APPLICATION_JSON))
-                .andExpect(header().string("Content-type","application/json"))
+        mockMvc.perform(get("/report").param("year", "2020").header("Accept", MediaType.APPLICATION_JSON))
+                .andExpect(header().string("Content-type", "application/json"))
                 .andExpect(jsonPath("$.items[0].id").value(item.getId()))
                 .andExpect(jsonPath("$.items[0].quantity").value(2))
                 .andExpect(jsonPath("$.year").value(2020))
-                .andExpect(jsonPath("$.revenue").value(1000*2));
+                .andExpect(jsonPath("$.revenue").value(1000 * 2));
     }
+
     @Test
-    @WithMockUser(roles= "ADMIN")
-    public void testForYearReportPdf() throws Exception{
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
-        var item= Item.builder().name("Phone").price(1000).build();
-        var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
-        var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
+    @WithMockUser(roles = "ADMIN")
+    public void testForYearReportPdf() throws Exception {
+        var user = User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
+        var item = Item.builder().name("Phone").price(1000).build();
+        var receiptItem = ReceiptItem.builder().item(item).quantity(2).build();
+        var receipt = Receipt.builder().totalPrice(1000 * 2).user(user).build();
         receipt.addReceiptItem(receiptItem);
         itemRepository.save(item);
         userRepository.save(user);
         receiptRepository.save(receipt);
-        mockMvc.perform(get("/report").param("year","2020").header("Accept", MediaType.APPLICATION_PDF))
-                .andExpect(header().string("Content-type","application/pdf"));
+        mockMvc.perform(get("/report").param("year", "2020").header("Accept", MediaType.APPLICATION_PDF))
+                .andExpect(header().string("Content-type", "application/pdf"));
     }
+
     @Test
-    @WithMockUser(roles= "ADMIN")
-    public void testForUserSpecificReceiptPdf() throws Exception{
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
-        var item= Item.builder().name("Phone").price(1000).build();
-        var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
-        var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
+    @WithMockUser(roles = "ADMIN")
+    public void testForUserSpecificReceiptPdf() throws Exception {
+        var user = User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
+        var item = Item.builder().name("Phone").price(1000).build();
+        var receiptItem = ReceiptItem.builder().item(item).quantity(2).build();
+        var receipt = Receipt.builder().totalPrice(1000 * 2).user(user).build();
         receipt.addReceiptItem(receiptItem);
         itemRepository.save(item);
         userRepository.save(user);
-        receipt=receiptRepository.save(receipt);
-        mockMvc.perform(get("/receipt/{id}",receipt.getId()).header("Accept", MediaType.APPLICATION_PDF))
-                .andExpect(header().string("Content-type","application/pdf"));
+        receipt = receiptRepository.save(receipt);
+        mockMvc.perform(get("/receipt/{id}", receipt.getId()).header("Accept", MediaType.APPLICATION_PDF))
+                .andExpect(header().string("Content-type", "application/pdf"));
     }
+
     @Test
-    @WithMockUser(roles= "ADMIN")
-    public void testForUserPdfAllReceipts() throws Exception{
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
-        var item= Item.builder().name("Phone").price(1000).build();
-        var receiptItem=ReceiptItem.builder().item(item).quantity(2).build();
-        var receipt=Receipt.builder().totalPrice(1000*2).user(user).build();
+    @WithMockUser(roles = "ADMIN")
+    public void testForUserPdfAllReceipts() throws Exception {
+        var user = User.builder().name("Steve").email("steve705@yahoo.com").roles(Set.of(Role.ADMIN)).password("4az5j@98gbmawq").build();
+        var item = Item.builder().name("Phone").price(1000).build();
+        var receiptItem = ReceiptItem.builder().item(item).quantity(2).build();
+        var receipt = Receipt.builder().totalPrice(1000 * 2).user(user).build();
         receipt.addReceiptItem(receiptItem);
         itemRepository.save(item);
-        user=userRepository.save(user);
+        user = userRepository.save(user);
         receiptRepository.save(receipt);
-        mockMvc.perform(get("/user/{id}/receipt",user.getId()).header("Accept", MediaType.APPLICATION_PDF))
-                .andExpect(header().string("Content-type","application/pdf"));
+        mockMvc.perform(get("/user/{id}/receipt", user.getId()).header("Accept", MediaType.APPLICATION_PDF))
+                .andExpect(header().string("Content-type", "application/pdf"));
     }
 }

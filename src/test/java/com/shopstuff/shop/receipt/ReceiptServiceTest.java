@@ -113,35 +113,36 @@ public class ReceiptServiceTest {
         var receiptItem3 = ReceiptItem.builder().id(1)
                 .item(Item.builder().id(4).price(2000).name("display").build()).quantity(3).build();
         var receipt2 = Receipt.builder().createdAt(time)
-                .user(User.builder().id(1).build()).totalPrice(500*3+2000*3).id(3).build();
+                .user(User.builder().id(1).build()).totalPrice(500 * 3 + 2000 * 3).id(3).build();
         receiptItem2.setReceipt(receipt2);
         receipt2.setReceiptItems(List.of(receiptItem2, receiptItem3));
         when(receiptRepository.findAllByCreatedAtBetween(
                 LocalDateTime.of(2020, 1, 1, 0, 0),
                 LocalDateTime.of(2020, 12, 31, 23, 59)))
                 .thenReturn(List.of(receipt1, receipt2));
-        var report=receiptService.yearlyReport(Year.of(2020));
-        assertEquals(2,report.getReportItemList().get(0).getItem().getId());
-        assertEquals(4,report.getReportItemList().get(0).getQuantity());
-        assertEquals(500,report.getReportItemList().get(0).getItem().getPrice());
-        assertEquals("phone",report.getReportItemList().get(0).getItem().getName());
-        assertEquals(4,report.getReportItemList().get(1).getItem().getId());
-        assertEquals(2000,report.getReportItemList().get(1).getItem().getPrice());
-        assertEquals("display",report.getReportItemList().get(1).getItem().getName());
-        assertEquals(3,report.getReportItemList().get(1).getQuantity());
-        assertEquals(2020,report.getYear().getValue());
-        assertEquals(2000*3+4*500,report.getRevenue().intValue());
+        var report = receiptService.yearlyReport(Year.of(2020));
+        assertEquals(2, report.getReportItemList().get(0).getItem().getId());
+        assertEquals(4, report.getReportItemList().get(0).getQuantity());
+        assertEquals(500, report.getReportItemList().get(0).getItem().getPrice());
+        assertEquals("phone", report.getReportItemList().get(0).getItem().getName());
+        assertEquals(4, report.getReportItemList().get(1).getItem().getId());
+        assertEquals(2000, report.getReportItemList().get(1).getItem().getPrice());
+        assertEquals("display", report.getReportItemList().get(1).getItem().getName());
+        assertEquals(3, report.getReportItemList().get(1).getQuantity());
+        assertEquals(2020, report.getYear().getValue());
+        assertEquals(2000 * 3 + 4 * 500, report.getRevenue().intValue());
     }
+
     @Test
-    public void testNoReceiptForYear(){
+    public void testNoReceiptForYear() {
         when(receiptRepository.findAllByCreatedAtBetween(
                 LocalDateTime.of(2020, 1, 1, 0, 0),
                 LocalDateTime.of(2020, 12, 31, 23, 59)))
                 .thenReturn(List.of());
-        var report=receiptService.yearlyReport(Year.of(2020));
-        assertEquals(0,report.getRevenue().intValue());
+        var report = receiptService.yearlyReport(Year.of(2020));
+        assertEquals(0, report.getRevenue().intValue());
         assertTrue(report.getReportItemList().isEmpty());
-        assertEquals(2020,report.getYear().getValue());
+        assertEquals(2020, report.getYear().getValue());
     }
 
 

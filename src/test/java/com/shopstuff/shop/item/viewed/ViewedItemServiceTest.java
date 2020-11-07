@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ViewedServiceTest {
+public class ViewedItemServiceTest {
     @InjectMocks
     private ViewedItemService viewedItemService;
 
@@ -58,54 +58,54 @@ public class ViewedServiceTest {
 
     @Test
     public void testViewedItemWhenItemWasNotViewedByUser() {
-        var user=User.builder().id(1).name("steve").roles(Set.of(Role.CUSTOMER)).build();
+        var user = User.builder().id(1).name("steve").roles(Set.of(Role.CUSTOMER)).build();
         when(userService.findByName(eq("steve"))).thenReturn(Optional.of(user));
-        var item=Item.builder().id(1).name("phone").price(700).build();
-        when(viewedItemRepository.findByUserAndItem(eq(user),eq(item))).thenReturn(Optional.empty());
-        viewedItemService.itemViewed("steve",item);
+        var item = Item.builder().id(1).name("phone").price(700).build();
+        when(viewedItemRepository.findByUserAndItem(eq(user), eq(item))).thenReturn(Optional.empty());
+        viewedItemService.itemViewed("steve", item);
         verify(viewedItemRepository).save(captor.capture());
-        assertEquals(captor.getValue().getItem(),item);
-        assertEquals(captor.getValue().getUser(),user);
+        assertEquals(captor.getValue().getItem(), item);
+        assertEquals(captor.getValue().getUser(), user);
     }
 
 
     @Test
     public void testViewedItemWhenItemWasViewedByUser() {
-        var user=User.builder().id(1).name("steve").roles(Set.of(Role.CUSTOMER)).build();
+        var user = User.builder().id(1).name("steve").roles(Set.of(Role.CUSTOMER)).build();
         when(userService.findByName(eq("steve"))).thenReturn(Optional.of(user));
-        var item=Item.builder().id(1).name("phone").price(700).build();
-        var viewedItem=ViewedItem.builder().user(user).item(item).build();
-        when(viewedItemRepository.findByUserAndItem(eq(user),eq(item))).thenReturn(Optional.of(viewedItem));
-        viewedItemService.itemViewed("steve",item);
+        var item = Item.builder().id(1).name("phone").price(700).build();
+        var viewedItem = ViewedItem.builder().user(user).item(item).build();
+        when(viewedItemRepository.findByUserAndItem(eq(user), eq(item))).thenReturn(Optional.of(viewedItem));
+        viewedItemService.itemViewed("steve", item);
         verify(viewedItemRepository).save(captor.capture());
-        assertEquals(captor.getValue().getItem(),item);
-        assertEquals(captor.getValue().getUser(),user);
+        assertEquals(captor.getValue().getItem(), item);
+        assertEquals(captor.getValue().getUser(), user);
     }
 
     @Test
-    public void testNoItemsViewedByUser(){
-        var user=User.builder().id(1).build();
-        var page=PageRequest.of(0, 5, Sort.by("lastViewed").descending());
+    public void testNoItemsViewedByUser() {
+        var user = User.builder().id(1).build();
+        var page = PageRequest.of(0, 5, Sort.by("lastViewed").descending());
         when(userService.findById(eq(1))).thenReturn(Optional.of(user));
-        when(viewedItemRepository.findByUser(eq(user),eq(page))).thenReturn(Page.empty());
-        assertTrue(viewedItemService.recentItemsByUser(1,page).isEmpty());
+        when(viewedItemRepository.findByUser(eq(user), eq(page))).thenReturn(Page.empty());
+        assertTrue(viewedItemService.recentItemsByUser(1, page).isEmpty());
     }
 
     @Test
-    public void testTwoItemsViewedByUser(){
-        var user=User.builder().id(1).build();
-        var page=PageRequest.of(0, 5, Sort.by("lastViewed").descending());
+    public void testTwoItemsViewedByUser() {
+        var user = User.builder().id(1).build();
+        var page = PageRequest.of(0, 5, Sort.by("lastViewed").descending());
         when(userService.findById(eq(1))).thenReturn(Optional.of(user));
-        var item1=Item.builder().id(1).name("phone").price(700).build();
-        var item2=Item.builder().id(1).name("phone").price(700).build();
-        var viewedItem1=ViewedItem.builder().item(item1)
-                .lastViewed(LocalDateTime.of(1999, Month.APRIL,17,17,17)).user(user).build();
-        var viewedItem2=ViewedItem.builder().item(item2)
-                .lastViewed(LocalDateTime.of(1999, Month.APRIL,18,10,3)).user(user).build();
-        when(viewedItemRepository.findByUser(eq(user),eq(page)))
+        var item1 = Item.builder().id(1).name("phone").price(700).build();
+        var item2 = Item.builder().id(1).name("phone").price(700).build();
+        var viewedItem1 = ViewedItem.builder().item(item1)
+                .lastViewed(LocalDateTime.of(1999, Month.APRIL, 17, 17, 17)).user(user).build();
+        var viewedItem2 = ViewedItem.builder().item(item2)
+                .lastViewed(LocalDateTime.of(1999, Month.APRIL, 18, 10, 3)).user(user).build();
+        when(viewedItemRepository.findByUser(eq(user), eq(page)))
                 .thenReturn(new PageImpl<>(List.of(viewedItem1, viewedItem2)));
-        var pageOfItems=viewedItemService.recentItemsByUser(1,page);
-        assertEquals(pageOfItems.toList().get(0),item2);
-        assertEquals(pageOfItems.toList().get(1),item1);
+        var pageOfItems = viewedItemService.recentItemsByUser(1, page);
+        assertEquals(pageOfItems.toList().get(0), item2);
+        assertEquals(pageOfItems.toList().get(1), item1);
     }
 }

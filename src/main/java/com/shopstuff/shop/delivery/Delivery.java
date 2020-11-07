@@ -1,8 +1,10 @@
 package com.shopstuff.shop.delivery;
 
 import com.shopstuff.shop.user.User;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Delivery {
 
     @Id

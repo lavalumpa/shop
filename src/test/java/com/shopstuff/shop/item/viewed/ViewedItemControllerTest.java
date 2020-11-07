@@ -14,7 +14,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -22,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class ViewedControllerTest {
+public class ViewedItemControllerTest {
 
     private final MockMvc mockMvc;
     private final ItemRepository itemRepository;
@@ -30,15 +29,15 @@ public class ViewedControllerTest {
     private final ViewedItemRepository viewedItemRepository;
 
     @Test
-    @WithMockUser(username = "Steve",roles = "CUSTOMER")
+    @WithMockUser(username = "Steve", roles = "CUSTOMER")
     public void testRecentItemsByUserWithOneItemChecked() throws Exception {
-        var user=User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
-        user=userRepository.save(user);
-        var item= Item.builder().price(700).name("phone").build();
-        item=itemRepository.save(item);
-        var viewedItem=ViewedItem.builder().user(user).item(item).build();
-        viewedItem=viewedItemRepository.save(viewedItem);
-        mockMvc.perform(get("/user/{id}/items/recent",user.getId()))
+        var user = User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
+        user = userRepository.save(user);
+        var item = Item.builder().price(700).name("phone").build();
+        item = itemRepository.save(item);
+        var viewedItem = ViewedItem.builder().user(user).item(item).build();
+        viewedItem = viewedItemRepository.save(viewedItem);
+        mockMvc.perform(get("/user/{id}/items/recent", user.getId()))
                 .andExpect(jsonPath("$.content[0].id").value(item.getId()))
                 .andExpect(jsonPath("$.content[0].price").value(item.getPrice()))
                 .andExpect(jsonPath("$.content[0].name").value(item.getName()));
