@@ -1,6 +1,7 @@
 package com.shopstuff.shop.cart;
 
 
+import com.shopstuff.shop.exceptions.BadRequestException;
 import com.shopstuff.shop.exceptions.NotFoundException;
 
 
@@ -25,7 +26,7 @@ public class CartService {
     public Receipt purchase(int id) {
         var cart = cartRepository.findById(id).orElseThrow(NotFoundException::new);
         if (cart.getCartItems().isEmpty()){
-            throw new NotFoundException();
+            throw new BadRequestException();
         }
         var receipt = receiptService.createReceipt(cart);
         cart.clear();
