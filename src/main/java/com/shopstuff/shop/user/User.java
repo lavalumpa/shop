@@ -34,6 +34,7 @@ public class User {
     @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
+    @Column(name="lastModifiedAt")
     private LocalDateTime lastModifiedDate;
 
 

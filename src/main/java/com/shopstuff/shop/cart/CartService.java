@@ -24,6 +24,9 @@ public class CartService {
     @Transactional
     public Receipt purchase(int id) {
         var cart = cartRepository.findById(id).orElseThrow(NotFoundException::new);
+        if (cart.getCartItems().isEmpty()){
+            throw new NotFoundException();
+        }
         var receipt = receiptService.createReceipt(cart);
         cart.clear();
         cartRepository.save(cart);
@@ -36,7 +39,7 @@ public class CartService {
     }
 
 
-    public Cart showCart(int id) {
+    public Cart findById(int id) {
         return cartRepository.findById(id).orElseThrow(NotFoundException::new);
     }
 

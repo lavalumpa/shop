@@ -35,12 +35,14 @@ public class Delivery {
     private Integer number;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "state")
     private DeliveryState deliveryState;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     private LocalDate estimatedDate;
+
 
     private LocalDateTime deliveredOn;
 
