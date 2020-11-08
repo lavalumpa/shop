@@ -16,8 +16,8 @@ public class WeatherDTO {
     public static class WeatherInfoDTO {
 
         private List<Weather> weather;
-        @JsonProperty("dt_time")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "DD-MM-YYYY  hh:mm:ss")
+        @JsonProperty("dt_txt")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime forecastTime;
 
         @Data
