@@ -28,13 +28,13 @@ public class DeliveryDTO {
     @JsonProperty("state")
     private DeliveryState deliveryState;
     @JsonProperty("created_at")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "DD-MM-YYYY")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDateTime createdAt;
     @JsonProperty("estimated_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "DD-MM-YYYY")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate estimatedDate;
     @JsonProperty("delivered_at")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "DD-MM-YYYY")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDateTime deliveredAt;
 
 

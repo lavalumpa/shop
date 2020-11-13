@@ -34,7 +34,7 @@ public class ReceiptController {
         return ReceiptDTO.listToDTO(receipts);
     }
 
-    @GetMapping(value = "user/{id}/receipt", headers = "accept=application/pdf")
+    @GetMapping(value = "user/{id}/receipt", headers = "accept=application/pdf", produces = {"application/pdf"})
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @userService.correctUser(principal.username,#id))")
     public ResponseEntity<byte[]> getUserReceiptsPDF(@PathVariable int id) {
         var user = userService.findById(id).orElseThrow(NotFoundException::new);
@@ -51,7 +51,7 @@ public class ReceiptController {
     }
 
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @receiptService.correctUser(principal.username,#id))")
-    @GetMapping(value = "receipt/{id}", headers = {"accept=application/pdf"})
+    @GetMapping(value = "receipt/{id}", headers = {"accept=application/pdf"},produces = {"application/pdf"} )
     public ResponseEntity<byte[]> getReceiptPDF(@PathVariable int id) {
         var receipt = receiptService.findById(id).orElseThrow(NotFoundException::new);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)

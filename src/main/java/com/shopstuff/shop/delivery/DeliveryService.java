@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Service
@@ -67,7 +68,11 @@ public class DeliveryService {
 
 
     public void updateDeliveryState(DeliveryDTO deliveryDTO, Delivery delivery) {
-        delivery.setDeliveryState(deliveryDTO.getDeliveryState());
+        var state = deliveryDTO.getDeliveryState();
+        delivery.setDeliveryState(state);
+        if (state == DeliveryState.DELIVERED) {
+            delivery.setDeliveredOn(LocalDateTime.now());
+        }
     }
 
     public Delivery saveOrUpdate(Delivery delivery) {

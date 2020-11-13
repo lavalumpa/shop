@@ -56,7 +56,7 @@ public class DeliveryControllerTest {
                 .andExpect(jsonPath("$.state").value(delivery.getDeliveryState().toString()))
                 .andExpect(jsonPath("$.created_at").exists())
                 .andExpect(jsonPath("$.estimated_date")
-                        .value(LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("DD-MM-YYYY"))))
+                        .value(LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
                 .andExpect(jsonPath("$.delivered_at").isEmpty());
     }
 
@@ -80,7 +80,8 @@ public class DeliveryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"state\":\"DELIVERED\"}"))
                 .andExpect(jsonPath("$.state").value("DELIVERED"))
-                .andExpect(jsonPath("$.address.city").value(delivery.getCity()));
+                .andExpect(jsonPath("$.address.city").value(delivery.getCity()))
+                .andExpect(jsonPath("$.delivered_at").isNotEmpty());
     }
 
 

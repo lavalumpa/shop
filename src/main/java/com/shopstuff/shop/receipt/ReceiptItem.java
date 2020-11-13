@@ -2,9 +2,7 @@ package com.shopstuff.shop.receipt;
 
 import com.shopstuff.shop.cart.CartItem;
 import com.shopstuff.shop.item.Item;
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -12,6 +10,8 @@ import javax.persistence.*;
 @Data
 @Builder
 @Table(name = "receipt_item")
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReceiptItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

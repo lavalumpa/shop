@@ -1,6 +1,7 @@
 package com.shopstuff.shop.cart;
 
 
+import com.shopstuff.shop.exceptions.BadRequestException;
 import com.shopstuff.shop.exceptions.NotFoundException;
 import com.shopstuff.shop.item.Item;
 import com.shopstuff.shop.item.ItemService;
@@ -91,10 +92,7 @@ public class CartServiceTest {
     public void testIfPurchaseEmptyCart() {
         Cart cart = Cart.builder().id(1).build();
         when(cartRepository.findById(eq(1))).thenReturn(Optional.of(cart));
-        when (receiptService.createReceipt(eq(cart))).thenReturn(Receipt.builder().build());
-        assertEquals(0, cartService.purchase(1).getTotalPrice());
-        verify(cartRepository).save(cartCaptor.capture());
-        assertEquals(cart, cartCaptor.getValue());
+        assertThrows(BadRequestException.class,()->cartService.purchase(1));
     }
 
     @Test

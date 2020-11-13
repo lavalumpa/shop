@@ -13,6 +13,7 @@ import com.shopstuff.shop.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.io.ByteArrayOutputStream;
@@ -32,7 +33,7 @@ public class ReceiptService {
 
     private final ReceiptRepository receiptRepository;
 
-
+    @Transactional
     public Report yearlyReport(Year year) {
         var payments = receiptRepository.findAllByCreatedAtBetween(
                 LocalDateTime.of(year.getValue(), Month.JANUARY, 1, 0, 0),
@@ -90,7 +91,7 @@ public class ReceiptService {
         document.open();
         for (Receipt r : receipts) {
             addOneReceiptToDocument(document, r);
-            document.newPage();
+
         }
         if (!receipts.isEmpty()) {
             document.add(new Paragraph("User: " + receipts.get(0).getUser().getName()));
