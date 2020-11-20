@@ -1,14 +1,13 @@
 package com.shopstuff.shop.delivery;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.shopstuff.shop.delivery.validator.ValidDeliveryRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,11 +16,12 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ValidDeliveryRequest
 public class DeliveryDTO {
 
     @JsonProperty("deliver")
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private boolean deliveryRequested;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean deliveryRequested;
     @JsonProperty("user_id")
     private int userId;
     private Address address;
@@ -43,6 +43,10 @@ public class DeliveryDTO {
                 this.getAddress().getCity() != null &&
                 this.getAddress().getStreet() != null &&
                 this.getAddress().getNumber() != null;
+    }
+
+    public boolean isDeliveryRequested(){
+        return deliveryRequested!=null && deliveryRequested;
     }
 
     public static DeliveryDTO toDTO(Delivery delivery) {
