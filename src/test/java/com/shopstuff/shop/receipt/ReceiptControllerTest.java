@@ -15,6 +15,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Year;
 import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -84,11 +85,11 @@ public class ReceiptControllerTest {
         item = itemRepository.save(item);
         userRepository.save(user);
         receiptRepository.save(receipt);
-        mockMvc.perform(get("/report").param("year", "2020").header("Accept", MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/report").param("year", Year.now().toString()).header("Accept", MediaType.APPLICATION_JSON))
                 .andExpect(header().string("Content-type", "application/json"))
                 .andExpect(jsonPath("$.items[0].id").value(item.getId()))
                 .andExpect(jsonPath("$.items[0].quantity").value(2))
-                .andExpect(jsonPath("$.year").value(2020))
+                .andExpect(jsonPath("$.year").value(Year.now().toString()))
                 .andExpect(jsonPath("$.revenue").value(1000 * 2));
     }
 
@@ -103,7 +104,7 @@ public class ReceiptControllerTest {
         itemRepository.save(item);
         userRepository.save(user);
         receiptRepository.save(receipt);
-        mockMvc.perform(get("/report").param("year", "2020").header("Accept", MediaType.APPLICATION_PDF))
+        mockMvc.perform(get("/report").param("year", Year.now().toString()).header("Accept", MediaType.APPLICATION_PDF))
                 .andExpect(header().string("Content-type", "application/pdf"));
     }
 
