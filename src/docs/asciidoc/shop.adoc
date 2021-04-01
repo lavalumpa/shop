@@ -1,0 +1,3 @@
+include::{snippets}/documentation/curl-request.adoc[]
+include::{snippets}/documentation/httpie-request.adoc[]
+include::{snippets}/documentation/http-response.adoc[]

@@ -1,6 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.3.3.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id "org.asciidoctor.convert" version "1.5.9.2"
 	id 'java'
 }
 
@@ -14,6 +15,7 @@ configurations {
 	}
 }
 
+
 repositories {
 	mavenCentral()
 }
@@ -26,6 +28,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.security:spring-security-test'
 	implementation 'org.flywaydb:flyway-core'
+	asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 	compileOnly 'org.projectlombok:lombok:1.18.18'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok:1.18.18'
@@ -33,10 +36,19 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	testCompileOnly 'org.projectlombok:lombok:1.18.18'
-	testAnnotationProcessor 'org.projectlombok:lombok'
+	testCompile 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.18'
 	testImplementation('com.h2database:h2:1.4.200')
+}
+ext {
+	snippetsDir = file('build/generated-snippets')
 }
 
 test {
+	outputs.dir snippetsDir
 	useJUnitPlatform()
+}
+asciidoctor {
+	inputs.dir snippetsDir
+	dependsOn test
 }
