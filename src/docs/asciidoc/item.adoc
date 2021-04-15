@@ -22,7 +22,7 @@ operation::item/post-item[snippets='curl-request,request-body,request-fields,res
 
 Endpoint to update an item, only available to users with role ADMIN:
 
-operation::item/update[snippets='curl-request,path-parameter,request-body,request-fields,response-body,response-fields']
+operation::item/update[snippets='curl-request,path-parameters,request-body,request-fields,response-body,response-fields']
 
 
 
