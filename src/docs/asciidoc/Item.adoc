@@ -1,0 +1,28 @@
+:page: https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html[page]
+
+Endpoint for one item, available for all users:
+
+operation::item/get-one-item[snippets='curl-request,path-parameters,response-body,response-fields']
+
+Endpoint for a {page} of items, available for all users:
+
+operation::item/get-page[snippets='curl-request,request-parameters,response-body,response-fields']
+
+Endpoint to search for items containing a string, available for all users:
+
+operation::item/search[snippets='curl-request,request-parameters,response-body,response-fields']
+
+Endpoint to delete an item, only available to users with the role ADMIN:
+
+operation::item/delete-item[snippets='curl-request,path-parameters']
+
+Endpoint to add an item, only available to users with role ADMIN:
+
+operation::item/post-item[snippets='curl-request,request-body,request-fields,response-body,response-fields,response-headers']
+
+Endpoint to update an item, only available to users with role ADMIN:
+
+operation::item/update[snippets='curl-request,path-parameter,request-body,request-fields,response-body,response-fields']
+
+
+
