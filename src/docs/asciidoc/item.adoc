@@ -1,28 +1,53 @@
 :page: https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html[page]
+:item: build/generated-snippets/item
+
+
 
 Endpoint for one item, available for all users:
 
-operation::item/get-one-item[snippets='curl-request,path-parameters,response-body,response-fields']
+include::{item}/get-one-item/curl-request.adoc[]
+include::{item}/get-one-item/path-parameters.adoc[]
+include::{item}/get-one-item/response-body.adoc[]
+include::{item}/get-one-item/response-fields.adoc[]
 
 Endpoint for a {page} of items, available for all users:
 
-operation::item/get-page[snippets='curl-request,request-parameters,response-body,response-fields']
+include::{item}/get-page/curl-request.adoc[]
+include::{item}/get-page/request-parameters.adoc[]
+include::{item}/get-page/response-body.adoc[]
+include::{item}/get-page/response-fields.adoc[]
 
 Endpoint to search for items containing a string, available for all users:
 
-operation::item/search[snippets='curl-request,request-parameters,response-body,response-fields']
+include::{item}/search/curl-request.adoc[]
+include::{item}/search/request-parameters.adoc[]
+include::{item}/search/request-parameters.adoc[]
+include::{item}/search/response-body.adoc[]
+include::{item}/search/response-fields.adoc[]
 
 Endpoint to delete an item, only available to users with the role ADMIN:
 
-operation::item/delete-item[snippets='curl-request,path-parameters']
+include::{item}/delete-item/curl-request.adoc[]
+include::{item}/delete-item/path-parameters.adoc[]
 
 Endpoint to add an item, only available to users with role ADMIN:
 
-operation::item/post-item[snippets='curl-request,request-body,request-fields,response-body,response-fields,response-headers']
+include::{item}/post-item/curl-request.adoc[]
+include::{item}/post-item/request-body.adoc[]
+include::{item}/post-item/request-fields.adoc[]
+include::{item}/post-item/response-body.adoc[]
+include::{item}/post-item/response-fields.adoc[]
+include::{item}/post-item/response-header.adoc[]
 
 Endpoint to update an item, only available to users with role ADMIN:
 
-operation::item/update[snippets='curl-request,path-parameters,request-body,request-fields,response-body,response-fields']
+include::{item}/update/curl-request.adoc[]
+include::{item}/update/path-parameters.adoc[]
+include::{item}/update/request-body.adoc[]
+include::{item}/update/request-fields.adoc[]
+include::{item}/update/response-body.adoc[]
+include::{item}/update/response-fields.adoc[]
+
 
 
 
