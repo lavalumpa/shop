@@ -37,7 +37,9 @@ include::{item}/post-item/request-body.adoc[]
 include::{item}/post-item/request-fields.adoc[]
 include::{item}/post-item/response-body.adoc[]
 include::{item}/post-item/response-fields.adoc[]
-include::{item}/post-item/response-header.adoc[]
+
+Headers
+include::{item}/post-item/response-headers.adoc[]
 
 Endpoint to update an item, only available to users with role ADMIN:
 

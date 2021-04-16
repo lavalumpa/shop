@@ -109,7 +109,7 @@ public class ItemControllerTest {
                                 fieldWithPath("name").description("Name of the item that's going to be added"),
                                 fieldWithPath("price").description("Price of the item that's going to be added")
                         ), responseHeaders(
-                                headerWithName("Location").description("The location of the newly created item")
+                                headerWithName("Location").description("The location header of the newly created item")
                         )));
     }
 
@@ -167,7 +167,7 @@ public class ItemControllerTest {
                                 parameterWithName("id").description("Id of the item to be updated")
                         ),
                         requestFields(
-                                fieldWithPath("id").description("Id of the item that is going to be updated"),
+                                fieldWithPath("id").description("Field is ignored as the id is provided by the path variable"),
                                 fieldWithPath("name").description("New name of the item"),
                                 fieldWithPath("price").description("New price of the item")
                         ),
