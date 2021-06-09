@@ -1,6 +1,7 @@
 package com.shopstuff.shop.delivery;
 
 import com.shopstuff.shop.cart.Cart;
+import com.shopstuff.shop.delivery.weather.OpenWeatherAPI;
 import com.shopstuff.shop.delivery.weather.WeatherDTO;
 import com.shopstuff.shop.exceptions.NotFoundException;
 import com.shopstuff.shop.user.User;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
-    private final RestTemplate restTemplate;
+    private final OpenWeatherAPI openWeatherAPI;
 
     @Value("${OPEN_WEATHER_MAP_KEY}")
     private String weatherMapAPIKey;
@@ -39,13 +40,13 @@ public class DeliveryService {
 
     public int estimatedDays(DeliveryDTO deliveryDTO) {
         int days = 1;
-        var weatherBelgrade = cityDayForecast("Belgrade", 8, restTemplate);
+        var weatherBelgrade = cityDayForecast("Belgrade", 8);
         if (weatherBelgrade.hasRainOrSnow()) {
             days += 1;
         }
         if (!deliveryDTO.getAddress().getCity().equalsIgnoreCase("belgrade")) {
             days += 2;
-            var weatherDeliveryCity = cityDayForecast(deliveryDTO.getAddress().getCity(), 24, restTemplate);
+            var weatherDeliveryCity = cityDayForecast(deliveryDTO.getAddress().getCity(), 24);
             if (weatherDeliveryCity.hasRainOrSnow()) {
                 days += 1;
             }
@@ -53,12 +54,8 @@ public class DeliveryService {
         return days;
     }
 
-    public WeatherDTO cityDayForecast(String city, int interval, RestTemplate restTemplate) {
-        var uri = UriComponentsBuilder.fromHttpUrl("http://api.openweathermap.org/data/2.5/forecast")
-                .queryParam("q", city)
-                .queryParam("cnt", interval)
-                .queryParam("appid", weatherMapAPIKey).toUriString();
-        return restTemplate.getForObject(uri, WeatherDTO.class);
+    public WeatherDTO cityDayForecast(String city, int interval) {
+        return openWeatherAPI.cityDayForecast(city,interval, weatherMapAPIKey);
     }
 
     public Delivery findById(int id) {
