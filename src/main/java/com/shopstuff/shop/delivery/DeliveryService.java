@@ -2,6 +2,7 @@ package com.shopstuff.shop.delivery;
 
 import com.shopstuff.shop.cart.Cart;
 import com.shopstuff.shop.delivery.weather.OpenWeatherAPI;
+import com.shopstuff.shop.delivery.weather.OpenWeatherProps;
 import com.shopstuff.shop.delivery.weather.WeatherDTO;
 import com.shopstuff.shop.exceptions.NotFoundException;
 import com.shopstuff.shop.user.User;
@@ -21,9 +22,8 @@ public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final OpenWeatherAPI openWeatherAPI;
+    private final OpenWeatherProps openWeatherProps;
 
-    @Value("${OPEN_WEATHER_MAP_KEY}")
-    private String weatherMapAPIKey;
 
 
     public Delivery createDelivery(Cart cart, DeliveryDTO deliveryDTO) {
@@ -55,7 +55,7 @@ public class DeliveryService {
     }
 
     public WeatherDTO cityDayForecast(String city, int interval) {
-        return openWeatherAPI.cityDayForecast(city,interval, weatherMapAPIKey);
+        return openWeatherAPI.cityDayForecast(city,interval, openWeatherProps.getKeyValue());
     }
 
     public Delivery findById(int id) {
