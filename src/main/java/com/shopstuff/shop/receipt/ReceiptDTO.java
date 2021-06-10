@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
 public class ReceiptDTO {
     private int id;
     @JsonProperty("items")
-    private List<ReceiptItemDTO>  receiptItemDTOS;
+    private List<ReceiptItemDTO> receiptItemDTOS;
     private int totalPrice;
     private LocalDateTime purchasedAt;
     @JsonProperty("purchasedBy")
     private int userId;
 
-    public static ReceiptDTO toDTO(Receipt receipt){
-        var receiptDTO= ReceiptDTO.builder()
+    public static ReceiptDTO toDTO(Receipt receipt) {
+        var receiptDTO = ReceiptDTO.builder()
                 .id(receipt.getId())
                 .purchasedAt(LocalDateTime.parse(receipt.getCreatedAt().toString()))
                 .totalPrice(receipt.getTotalPrice())
@@ -33,7 +33,7 @@ public class ReceiptDTO {
         return receiptDTO;
     }
 
-    public static List<ReceiptDTO> listToDTO(List<Receipt> receipt){
+    public static List<ReceiptDTO> listToDTO(List<Receipt> receipt) {
         return receipt.stream()
                 .map(ReceiptDTO::toDTO)
                 .collect(Collectors.toList());

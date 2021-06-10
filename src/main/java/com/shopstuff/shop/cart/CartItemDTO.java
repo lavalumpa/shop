@@ -13,11 +13,11 @@ public class CartItemDTO {
     private int totalPrice;
 
     public static CartItemDTO toDTO(CartItem cartItem) {
-      var dto =CartItemDTO.builder()
-              .itemId(cartItem.getItem().getId())
-              .quantity(cartItem.getQuantity())
-              .build();
-      dto.setTotalPrice(cartItem.getItem().getPrice()*cartItem.getQuantity());
-      return dto;
+        var dto = CartItemDTO.builder()
+                .itemId(cartItem.getItem().getId())
+                .quantity(cartItem.getQuantity())
+                .build();
+        dto.setTotalPrice(cartItem.getItem().getPrice() * cartItem.getQuantity());
+        return dto;
     }
 }

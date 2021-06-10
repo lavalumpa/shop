@@ -12,7 +12,7 @@ public class ReceiptItemDTO {
     private int price;
     private int quantity;
 
-    public static ReceiptItemDTO toDTO(ReceiptItem receiptItem){
+    public static ReceiptItemDTO toDTO(ReceiptItem receiptItem) {
         return ReceiptItemDTO.builder()
                 .itemId(receiptItem.getItem().getId())
                 .price(receiptItem.getItem().getPrice())

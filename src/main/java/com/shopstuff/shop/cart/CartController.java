@@ -23,10 +23,10 @@ public class CartController {
 
     @PostMapping("{id}/purchase")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @cartService.correctUser(principal.username,#id))")
-    public ResponseEntity<ReceiptDTO> purchase(@PathVariable int id,@Valid @RequestBody DeliveryDTO deliveryDTO) {
-        var cart=cartService.findById(id);
-        var receipt=cartService.purchase(id);
-        if (deliveryDTO.isDeliveryRequested()){
+    public ResponseEntity<ReceiptDTO> purchase(@PathVariable int id, @Valid @RequestBody DeliveryDTO deliveryDTO) {
+        var cart = cartService.findById(id);
+        var receipt = cartService.purchase(id);
+        if (deliveryDTO.isDeliveryRequested()) {
             deliveryService.createDelivery(cart, deliveryDTO);
         }
         return ResponseEntity.ok(ReceiptDTO.toDTO(receipt));
@@ -40,8 +40,8 @@ public class CartController {
 
     @PostMapping("{id}/item")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @cartService.correctUser(principal.username,#id))")
-    public CartDTO addItemToCart(@PathVariable int id,@RequestBody CartItemDTO cartItemDTO) {
-        Cart cart=cartService.addItemToCart(id,cartItemDTO);
+    public CartDTO addItemToCart(@PathVariable int id, @RequestBody CartItemDTO cartItemDTO) {
+        Cart cart = cartService.addItemToCart(id, cartItemDTO);
         return CartDTO.toDTO(cart);
     }
 

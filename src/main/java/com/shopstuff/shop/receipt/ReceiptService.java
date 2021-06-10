@@ -6,7 +6,6 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.shopstuff.shop.cart.Cart;
 import com.shopstuff.shop.cart.CartItem;
-
 import com.shopstuff.shop.receipt.report.Report;
 import com.shopstuff.shop.receipt.report.ReportItem;
 import com.shopstuff.shop.user.User;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;

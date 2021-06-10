@@ -45,8 +45,8 @@ public class DeliveryDTO {
                 this.getAddress().getNumber() != null;
     }
 
-    public boolean isDeliveryRequested(){
-        return deliveryRequested!=null && deliveryRequested;
+    public boolean isDeliveryRequested() {
+        return deliveryRequested != null && deliveryRequested;
     }
 
     public static DeliveryDTO toDTO(Delivery delivery) {

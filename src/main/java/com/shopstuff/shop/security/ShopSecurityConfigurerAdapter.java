@@ -16,7 +16,7 @@ public class ShopSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter 
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/user").permitAll()
+                .antMatchers(HttpMethod.POST, "/user").permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .and().csrf()

@@ -2,11 +2,12 @@ package com.shopstuff.shop.cart;
 
 
 import com.shopstuff.shop.user.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +26,15 @@ public class Cart {
     @JoinColumn(name = "userId")
     private User user;
     @Builder.Default
-    @OneToMany(mappedBy = "cart",cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE},orphanRemoval = true)
+    @OneToMany(mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
 
-    public void addCartItem(CartItem cartItem){
+    public void addCartItem(CartItem cartItem) {
         this.cartItems.add(cartItem);
         cartItem.setCart(this);
     }
-    public void clear(){
+
+    public void clear() {
         cartItems.clear();
     }
 

@@ -27,24 +27,23 @@ public class Receipt {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name= "userId")
+    @JoinColumn(name = "userId")
     private User user;
 
     @OneToMany(mappedBy = "receipt", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @Builder.Default
-    private List<ReceiptItem> receiptItems=new ArrayList<>();
+    private List<ReceiptItem> receiptItems = new ArrayList<>();
 
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Positive(message ="Total price must be greater than 0")
+    @Positive(message = "Total price must be greater than 0")
     private int totalPrice;
 
-    public void addReceiptItem(ReceiptItem receiptItem){
+    public void addReceiptItem(ReceiptItem receiptItem) {
         receiptItems.add(receiptItem);
         receiptItem.setReceipt(this);
     }
-
 
 
 }

@@ -19,8 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +48,7 @@ public class CartServiceTest {
         cart.getCartItems().add(CartItem.builder().item(Item.builder().price(200).build()).quantity(5).build());
         cart.getCartItems().add(CartItem.builder().item(Item.builder().price(300).build()).quantity(5).build());
         when(cartRepository.findById(eq(1))).thenReturn(Optional.of(cart));
-        assertEquals(300*5+200*5, cartService.totalPrice(1));
+        assertEquals(300 * 5 + 200 * 5, cartService.totalPrice(1));
     }
 
     @Test
@@ -61,9 +61,9 @@ public class CartServiceTest {
     @Test
     public void testGetTotalPriceItemAddingTwoRemovingOne() {
         Cart cart = Cart.builder().id(1).build();
-        CartItem cartItem= CartItem.builder().item( Item.builder().price(100).build()).quantity(5).build();
+        CartItem cartItem = CartItem.builder().item(Item.builder().price(100).build()).quantity(5).build();
         cart.getCartItems().add(cartItem);
-        cart.getCartItems().add(CartItem.builder().item( Item.builder().price(300).build()).quantity(5).build());
+        cart.getCartItems().add(CartItem.builder().item(Item.builder().price(300).build()).quantity(5).build());
         cart.getCartItems().remove(cartItem);
         when(cartRepository.findById(eq(1))).thenReturn(Optional.of(cart));
         assertEquals(1500, cartService.totalPrice(1));
@@ -81,9 +81,9 @@ public class CartServiceTest {
         cart.getCartItems().add(CartItem.builder().item(Item.builder().price(100).build()).quantity(5).build());
         cart.getCartItems().add(CartItem.builder().item(Item.builder().price(700).build()).quantity(1).build());
         when(cartRepository.findById(eq(1))).thenReturn(Optional.of(cart));
-        when (receiptService.createReceipt(eq(cart))).thenReturn(Receipt.builder().totalPrice(100*5+700).build());
+        when(receiptService.createReceipt(eq(cart))).thenReturn(Receipt.builder().totalPrice(100 * 5 + 700).build());
         var receipt = cartService.purchase(1);
-        assertEquals(100*5+700,receipt.getTotalPrice());
+        assertEquals(100 * 5 + 700, receipt.getTotalPrice());
         verify(cartRepository).save(cartCaptor.capture());
         assertEquals(cart, cartCaptor.getValue());
     }
@@ -92,7 +92,7 @@ public class CartServiceTest {
     public void testIfPurchaseEmptyCart() {
         Cart cart = Cart.builder().id(1).build();
         when(cartRepository.findById(eq(1))).thenReturn(Optional.of(cart));
-        assertThrows(BadRequestException.class,()->cartService.purchase(1));
+        assertThrows(BadRequestException.class, () -> cartService.purchase(1));
     }
 
     @Test
@@ -108,9 +108,9 @@ public class CartServiceTest {
     }
 
     @Test
-    public void testingAddingWhenNoItemExists(){
+    public void testingAddingWhenNoItemExists() {
         when(itemService.findById(eq(2))).thenReturn(Optional.empty());
-        var cart=Cart.builder().id(1).build();
+        var cart = Cart.builder().id(1).build();
         when(cartRepository.findById(eq(1))).thenReturn(Optional.of(cart));
         assertThrows(NotFoundException.class, () -> cartService.addItemToCart(1, CartItemDTO.builder().itemId(2).build()));
     }
@@ -118,7 +118,7 @@ public class CartServiceTest {
     @Test
     public void testAddingCartItemToEmptyCart() {
         var cart = Cart.builder().id(1).build();
-        var item =Item.builder().id(1).name("Phone").price(7000).build();
+        var item = Item.builder().id(1).name("Phone").price(7000).build();
         var cartItem = CartItem.builder().item(item).quantity(5).build();
         when(cartRepository.findById(eq(1))).thenReturn(Optional.of(cart));
         when(itemService.findById(eq(1))).thenReturn(Optional.of(item));
@@ -130,12 +130,12 @@ public class CartServiceTest {
     }
 
     @Test
-    public void testCreateCart(){
+    public void testCreateCart() {
         var user = User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
-        when (cartRepository.save(any())).thenReturn(Cart.builder().user(user).build());
-        var cart=cartService.createCart(user);
+        when(cartRepository.save(any())).thenReturn(Cart.builder().user(user).build());
+        var cart = cartService.createCart(user);
         verify(cartRepository).save(cartCaptor.capture());
-        assertEquals(cart,cartCaptor.getValue());
+        assertEquals(cart, cartCaptor.getValue());
     }
 
 }

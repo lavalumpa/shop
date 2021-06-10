@@ -7,10 +7,7 @@ import com.shopstuff.shop.delivery.weather.WeatherDTO;
 import com.shopstuff.shop.exceptions.NotFoundException;
 import com.shopstuff.shop.user.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +20,6 @@ public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final OpenWeatherAPI openWeatherAPI;
     private final OpenWeatherProps openWeatherProps;
-
 
 
     public Delivery createDelivery(Cart cart, DeliveryDTO deliveryDTO) {
@@ -55,7 +51,7 @@ public class DeliveryService {
     }
 
     public WeatherDTO cityDayForecast(String city, int interval) {
-        return openWeatherAPI.cityDayForecast(city,interval, openWeatherProps.getKeyValue());
+        return openWeatherAPI.cityDayForecast(city, interval, openWeatherProps.getKeyValue());
     }
 
     public Delivery findById(int id) {

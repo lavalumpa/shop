@@ -27,7 +27,7 @@ public class ReceiptItem {
     private Item item;
     private int quantity;
 
-    public static ReceiptItem toReceiptItem(CartItem cartItem){
+    public static ReceiptItem toReceiptItem(CartItem cartItem) {
         return ReceiptItem.builder()
                 .item(cartItem.getItem())
                 .quantity(cartItem.getQuantity()).build();

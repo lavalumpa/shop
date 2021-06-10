@@ -18,7 +18,7 @@ public @interface ValidDeliveryRequest {
 
     String message() default "Delivery has to be false or true with Address";
 
-    Class<?>[]groups() default { };
+    Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default { };
+    Class<? extends Payload>[] payload() default {};
 }

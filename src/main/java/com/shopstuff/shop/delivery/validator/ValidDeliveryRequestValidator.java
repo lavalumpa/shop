@@ -14,11 +14,11 @@ public class ValidDeliveryRequestValidator implements ConstraintValidator<ValidD
 
     @Override
     public boolean isValid(DeliveryDTO value, ConstraintValidatorContext context) {
-        if (value==null|| value.getDeliveryRequested()==null){
+        if (value == null || value.getDeliveryRequested() == null) {
             return false;
         }
-        if ( value.isDeliveryRequested()) {
-            return value.getAddress()!=null && value.infoProvided();
+        if (value.isDeliveryRequested()) {
+            return value.getAddress() != null && value.infoProvided();
         } else {
             return true;
         }

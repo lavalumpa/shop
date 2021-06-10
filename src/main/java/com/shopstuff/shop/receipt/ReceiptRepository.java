@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface ReceiptRepository extends JpaRepository<Receipt,Integer> {
+public interface ReceiptRepository extends JpaRepository<Receipt, Integer> {
     List<Receipt> findByUser(User user);
+
     List<Receipt> findAllByCreatedAtBetween(LocalDateTime createdAtStart, LocalDateTime createdAtEnd);
 }

@@ -63,7 +63,7 @@ public class ReceiptControllerTest {
         receipt.addReceiptItem(receiptItem);
         itemRepository.save(item);
         user = userRepository.save(user);
-        receipt=receiptRepository.save(receipt);
+        receipt = receiptRepository.save(receipt);
         mockMvc.perform(get("/user/{id}/receipt", user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(receipt.getId()))
