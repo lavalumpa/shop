@@ -38,11 +38,11 @@ public class CartService {
     }
 
     @Transactional
-    public CartDTO updateCart(int id, CartDTO cartDTO) {
+    public Cart updateCart(int id, CartDTO cartDTO) {
         var cart = cartRepository.findById(id).orElseThrow(NotFoundException::new);
         cart.clear();
         update(cart, cartDTO);
-        return CartDTO.toDTO(cart);
+        return cart;
     }
 
     private void update(Cart cart, CartDTO cartDTO) {

@@ -42,7 +42,7 @@ public class CartController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @cartService.correctUser(principal.username,#id))")
     public ResponseEntity<CartDTO> updateCart(@PathVariable int id, @Valid @RequestBody CartDTO cartDTO) {
         var updated = cartService.updateCart(id, cartDTO);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(CartDTO.toDTO(updated));
     }
 
     @PostMapping("{id}/item")
