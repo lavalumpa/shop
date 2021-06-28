@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.security.Principal;
 
@@ -28,37 +29,47 @@ public class ItemController {
 
 
     @GetMapping("/{id}")
-    public Item getItem(@PathVariable int id, Principal principal) {
+    public ItemDTO getItem(@PathVariable int id, Principal principal) {
         var item = itemService.findById(id).orElseThrow(NotFoundException::new);
         viewedItemService.itemViewed(principal.getName(), item);
-        return item;
+        return ItemDTO.toDto(item);
     }
 
     @GetMapping("/search")
-    public Page<Item> searchItems(@RequestParam(name = "q") String name, @PageableDefault(size = 10) Pageable pageable) {
-        return itemService.searchByName(name, pageable);
+    public Page<ItemDTO> searchItems(@RequestParam(name = "q") String name, @PageableDefault(size = 10) Pageable pageable) {
+        var itemPage=itemService.searchByName(name, pageable);
+        return itemPage.map(ItemDTO::toDto);
     }
 
     @GetMapping
-    public Page<Item> allItems(@PageableDefault(size = 20) Pageable pageable) {
-        return itemService.findAll(pageable);
+    public Page<ItemDTO> allItems(@PageableDefault(size = 20) Pageable pageable) {
+        return itemService.findAll(pageable).map(ItemDTO::toDto);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Item> addItem(@RequestBody Item item) {
-        Item saved = itemService.saveItem(item);
-        return ResponseEntity.created(URI.create("/item/" + saved.getId())).body(item);
+    public ResponseEntity<ItemDTO> addItem(@RequestBody @Valid ItemDTO itemDTO) {
+        var item=Item.builder()
+                .name(itemDTO.getName())
+                .price(itemDTO.getPrice())
+                .build();
+        var saved = itemService.saveItem(item);
+        return ResponseEntity.created(URI.create("/item/" + saved.getId())).body(ItemDTO.toDto(saved));
     }
 
 
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Item updateItem(@PathVariable int id, @RequestBody Item item) {
+    public ItemDTO updateItem(@PathVariable int id, @RequestBody @Valid ItemDTO itemDTO) {
+        var item=Item.builder()
+                .name(itemDTO.getName())
+                .price(itemDTO.getPrice())
+                .build();
         if (itemService.existsById(id)) {
             item.setId(id);
         }
-        return itemService.saveItem(item);
+        var updated=itemService.saveItem(item);
+        return ItemDTO.toDto(updated);
     }
 
     @DeleteMapping("{id}")
