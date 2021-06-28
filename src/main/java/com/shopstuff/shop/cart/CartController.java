@@ -38,6 +38,13 @@ public class CartController {
         return CartDTO.toDTO(cartService.findById(id));
     }
 
+    @PutMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @cartService.correctUser(principal.username,#id))")
+    public ResponseEntity<CartDTO> updateCart(@PathVariable int id, @Valid @RequestBody CartDTO cartDTO) {
+        var updated = cartService.updateCart(id, cartDTO);
+        return ResponseEntity.ok(updated);
+    }
+
     @PostMapping("{id}/item")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('CUSTOMER') and @cartService.correctUser(principal.username,#id))")
     public CartDTO addItemToCart(@PathVariable int id, @RequestBody CartItemDTO cartItemDTO) {

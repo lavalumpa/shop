@@ -20,4 +20,6 @@ public class CartItemDTO {
         dto.setTotalPrice(cartItem.getItem().getPrice() * cartItem.getQuantity());
         return dto;
     }
+
+
 }

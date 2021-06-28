@@ -33,8 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,40 +57,38 @@ public class CartControllerTest {
     private OpenWeatherAPI openWeatherAPI;
 
 
-
-
     @Test
     @WithMockUser(roles = "CUSTOMER", username = "steve")
-    public void testingShowCart() throws Exception{
+    public void testingShowCart() throws Exception {
         var cart = Cart.builder().user(User.builder().name("steve").build()).build();
         var item = Item.builder().name("Phone").price(7000).build();
-        item=itemRepository.save(item);
+        item = itemRepository.save(item);
         cart.addCartItem(CartItem.builder().item(item).quantity(2).build());
         cartRepository.save(cart);
-        mockMvc.perform(get("/cart/{id}",cart.getId()))
+        mockMvc.perform(get("/cart/{id}", cart.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.totalPrice").value(7000*2))
+                .andExpect(jsonPath("$.totalPrice").value(7000 * 2))
                 .andExpect(jsonPath("$.cartItems[0].id").value(item.getId()))
                 .andExpect(jsonPath("$.cartItems[0].quantity").value(2))
-                .andExpect(jsonPath("$.cartItems[0].totalPrice").value(item.getPrice()*2));
+                .andExpect(jsonPath("$.cartItems[0].totalPrice").value(item.getPrice() * 2));
     }
 
     @Test
     @WithMockUser(roles = "CUSTOMER", username = "steve")
-    public void testingAddItemToCart() throws Exception{
+    public void testingAddItemToCart() throws Exception {
         var cart = Cart.builder().user(User.builder().name("steve").build()).build();
         cartRepository.save(cart);
-        var cartItemDto=CartItemDTO.builder().itemId(1).quantity(5).build();
+        var cartItemDto = CartItemDTO.builder().itemId(1).quantity(5).build();
         var item = Item.builder().name("Phone").price(2_000).build();
         itemRepository.save(item);
         String json = objectMapper.writeValueAsString(cartItemDto);
-        mockMvc.perform(post("/cart/{id}/item",cart.getId()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/cart/{id}/item", cart.getId()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.totalPrice").value(10_000))
-                .andExpect(jsonPath("$.cartItems[0].totalPrice").value(item.getPrice()*5))
+                .andExpect(jsonPath("$.cartItems[0].totalPrice").value(item.getPrice() * 5))
                 .andExpect(jsonPath("$.cartItems[0].quantity").value(cartItemDto.getQuantity()))
                 .andExpect(jsonPath("$.cartItems[0].id").value(cartItemDto.getItemId()));
 
@@ -101,18 +98,18 @@ public class CartControllerTest {
     @WithMockUser(roles = "CUSTOMER", username = "steve")
     public void testingPurchaseWithTwoItemsWithNoDelivery() throws Exception {
         var cart = Cart.builder().build();
-        var role=Role.valueOf("CUSTOMER");
-        var user=User.builder().name("steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").roles(Set.of(role)).build();
-        user=userRepository.save(user);
+        var role = Role.valueOf("CUSTOMER");
+        var user = User.builder().name("steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").roles(Set.of(role)).build();
+        user = userRepository.save(user);
         cart.setUser(user);
-        var item1=Item.builder().name("Phone").price(1000).build();
-        var item2=Item.builder().name("Headphones").price(400).build();
-        item1=itemRepository.save(item1);
-        item2=itemRepository.save(item2);
+        var item1 = Item.builder().name("Phone").price(1000).build();
+        var item2 = Item.builder().name("Headphones").price(400).build();
+        item1 = itemRepository.save(item1);
+        item2 = itemRepository.save(item2);
         cart.addCartItem(CartItem.builder().item(item1).quantity(2).build());
         cart.addCartItem(CartItem.builder().item(item2).quantity(5).build());
         cartRepository.save(cart);
-        mockMvc.perform(post("/cart/{id}/purchase",cart.getId()).with(csrf())
+        mockMvc.perform(post("/cart/{id}/purchase", cart.getId()).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content("{\"deliver\": false}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
@@ -124,9 +121,31 @@ public class CartControllerTest {
                 .andExpect(jsonPath("$.items[1].quantity").value(5))
                 .andExpect(jsonPath("$.purchasedAt").exists())
                 .andExpect(jsonPath("$.purchasedBy").value(user.getId()))
-                .andExpect(jsonPath("$.totalPrice").value(1000*2+5*400));
+                .andExpect(jsonPath("$.totalPrice").value(1000 * 2 + 5 * 400));
         assertTrue(deliveryRepository.findAll().isEmpty());
-        assertEquals(0,cart.getCartItems().size());
+        assertEquals(0, cart.getCartItems().size());
+    }
+
+    @Test
+    @WithMockUser(roles = "CUSTOMER", username = "steve")
+    public void testingUpdateCart() throws Exception {
+        var user = createCustomerSteve();
+        var cart = Cart.builder().user(user).build();
+        var item = createPhoneItem();
+        cart.addCartItem(CartItem.builder().cart(cart).item(item).quantity(5).build());
+        itemRepository.save(item);
+        userRepository.save(user);
+        cartRepository.save(cart);
+        var updatedCart = Cart.builder().user(user).build();
+        updatedCart.addCartItem(CartItem.builder().item(item).cart(cart).quantity(2).build());
+        var json = objectMapper.writeValueAsString(CartDTO.toDTO(updatedCart));
+        mockMvc.perform(put("/cart/{id}", cart.getId()).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.cartItems[0].id").value(item.getId()))
+                .andExpect(jsonPath("$.cartItems[0].totalPrice").value(item.getPrice() * 2))
+                .andExpect(jsonPath("$.cartItems[0].quantity").value(2));
     }
 
     @Test
@@ -135,7 +154,7 @@ public class CartControllerTest {
         var cart = Cart.builder().build();
         var role = Role.valueOf("CUSTOMER");
         var user = User.builder().name("steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").roles(Set.of(role)).build();
-        user=userRepository.save(user);
+        user = userRepository.save(user);
         cart.setUser(user);
         var item1 = Item.builder().name("Phone").price(1000).build();
         var item2 = Item.builder().name("Headphones").price(400).build();
@@ -144,10 +163,10 @@ public class CartControllerTest {
         cart.addCartItem(CartItem.builder().item(item1).quantity(2).build());
         cart.addCartItem(CartItem.builder().item(item2).quantity(5).build());
         cartRepository.save(cart);
-        var weatherDTO=new WeatherDTO();
-        var weather=new WeatherDTO.WeatherInfoDTO.Weather();
+        var weatherDTO = new WeatherDTO();
+        var weather = new WeatherDTO.WeatherInfoDTO.Weather();
         weather.setMain("Rain");
-        var weatherInfo= new WeatherDTO.WeatherInfoDTO();
+        var weatherInfo = new WeatherDTO.WeatherInfoDTO();
         weatherInfo.setWeather(List.of(weather));
         weatherInfo.setForecastTime(LocalDateTime.now());
         weatherDTO.setWeatherInfoList(List.of(weatherInfo));
@@ -156,8 +175,8 @@ public class CartControllerTest {
                         .city("Belgrade")
                         .number(17)
                         .street("Sazonova").build()).build();
-        String json=objectMapper.writeValueAsString(deliveryDTO);
-        when(openWeatherAPI.cityDayForecast("Belgrade",8,openWeatherProps.getKeyValue())).thenReturn(weatherDTO);
+        String json = objectMapper.writeValueAsString(deliveryDTO);
+        when(openWeatherAPI.cityDayForecast("Belgrade", 8, openWeatherProps.getKeyValue())).thenReturn(weatherDTO);
         mockMvc.perform(post("/cart/{id}/purchase", cart.getId()).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isOk())
@@ -171,12 +190,21 @@ public class CartControllerTest {
                 .andExpect(jsonPath("$.purchasedAt").exists())
                 .andExpect(jsonPath("$.purchasedBy").value(user.getId()))
                 .andExpect(jsonPath("$.totalPrice").value(1000 * 2 + 5 * 400));
-        var delivery=deliveryRepository.findAll().get(0);
+        var delivery = deliveryRepository.findAll().get(0);
         assertThat("Belgrade").isEqualTo(delivery.getCity());
         assertThat("Sazonova").isEqualToIgnoringCase(delivery.getStreet());
         assertThat(17).isEqualTo(delivery.getNumber());
         assertThat(LocalDate.now().plusDays(2)).isEqualTo(delivery.getEstimatedDate());
         assertTrue(cart.getCartItems().isEmpty());
+    }
+
+    private User createCustomerSteve() {
+        var role = Role.CUSTOMER;
+        return User.builder().name("steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").roles(Set.of(role)).build();
+    }
+
+    private Item createPhoneItem() {
+        return Item.builder().name("Phone").price(2_000).build();
     }
 
 }

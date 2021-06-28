@@ -37,6 +37,30 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
+    @Transactional
+    public CartDTO updateCart(int id, CartDTO cartDTO) {
+        var cart = cartRepository.findById(id).orElseThrow(NotFoundException::new);
+        cart.clear();
+        update(cart, cartDTO);
+        return CartDTO.toDTO(cart);
+    }
+
+    private void update(Cart cart, CartDTO cartDTO) {
+        for (CartItemDTO cartItemDTO : cartDTO.getCartItems()) {
+            cart.addCartItem(createCartItem(cart, cartItemDTO));
+        }
+        cartRepository.save(cart);
+    }
+
+    private CartItem createCartItem(Cart cart, CartItemDTO cartDTO) {
+        var item = itemService.findById(cartDTO.getItemId()).orElseThrow(NotFoundException::new);
+        return CartItem.builder()
+                .item(item)
+                .cart(cart)
+                .quantity(cartDTO.getQuantity())
+                .build();
+    }
+
 
     public Cart findById(int id) {
         return cartRepository.findById(id).orElseThrow(NotFoundException::new);

@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -108,6 +109,67 @@ public class CartServiceTest {
     }
 
     @Test
+    public void testUpdatingEmptyCart() {
+        var cart = Cart.builder().build();
+        var id = 1;
+        var item = createItemPhone();
+        var quantity = 1;
+        var cartItemDTO = CartItemDTO.builder().itemId(item.getId()).quantity(quantity)
+                .totalPrice(item.getPrice() * quantity).build();
+        var cartDTO = CartDTO.builder().cartItems(List.of(cartItemDTO)).build();
+        when(cartRepository.findById(id)).thenReturn(Optional.of(cart));
+        when(itemService.findById(item.getId())).thenReturn(Optional.of(item));
+        var updatedDto = cartService.updateCart(id, cartDTO);
+        verify(cartRepository).save(cartCaptor.capture());
+        assertThat(CartDTO.toDTO(cartCaptor.getValue())).isEqualTo(cartDTO);
+        assertThat(updatedDto).isEqualTo(cartDTO);
+    }
+
+    @Test
+    public void testUpdatingNonEmptyCart() {
+        var cartId = 1;
+        var cart = Cart.builder().id(cartId).build();
+        var item = createItemPhone();
+        var quantity = 1;
+        var cartItem = CartItem.builder().id(cartId).item(item).cart(cart).quantity(quantity).build();
+        cart.addCartItem(cartItem);
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        var updateItem = createHeadphones();
+        var updateQuantity = 2;
+        var cartItemDTO = CartItemDTO.builder().itemId(updateItem.getId())
+                .totalPrice(updateQuantity * updateItem.getPrice()).quantity(updateQuantity).build();
+        var cartDTO = CartDTO.builder().id(cartId).cartItems(List.of(cartItemDTO)).build();
+        when(itemService.findById(updateItem.getId())).thenReturn(Optional.of(updateItem));
+        var updatedDTO = cartService.updateCart(cartId, cartDTO);
+        verify(cartRepository).save(cartCaptor.capture());
+        assertThat(CartDTO.toDTO(cartCaptor.getValue())).isEqualTo(cartDTO);
+        assertThat(updatedDTO).isEqualTo(cartDTO);
+    }
+
+    @Test
+    public void testUpdatingItemWhenItemNotFound() {
+        var cartId = 1;
+        var cart = Cart.builder().id(1).build();
+        var item = createItemPhone();
+        var quantity = 2;
+        var cartItemDTO = CartItemDTO.builder().itemId(item.getId())
+                .quantity(quantity).totalPrice(quantity * item.getPrice()).build();
+        var cartDTO = CartDTO.builder().id(cartId).cartItems(List.of(cartItemDTO)).build();
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(itemService.findById(item.getId())).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class,()->cartService.updateCart(cartId,cartDTO));
+    }
+
+
+    @Test
+    public void testUpdatingWhenNoCart() {
+        var id = 1;
+        var cartDto = CartDTO.builder().build();
+        when(cartRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> cartService.updateCart(id, cartDto));
+    }
+
+    @Test
     public void testingAddingWhenNoItemExists() {
         when(itemService.findById(eq(2))).thenReturn(Optional.empty());
         var cart = Cart.builder().id(1).build();
@@ -136,6 +198,14 @@ public class CartServiceTest {
         var cart = cartService.createCart(user);
         verify(cartRepository).save(cartCaptor.capture());
         assertEquals(cart, cartCaptor.getValue());
+    }
+
+    private Item createItemPhone() {
+        return Item.builder().id(1).name("Phone").price(2000).build();
+    }
+
+    private Item createHeadphones() {
+        return Item.builder().id(2).name("Headphones").price(500).build();
     }
 
 }
