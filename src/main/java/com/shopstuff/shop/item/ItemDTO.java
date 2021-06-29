@@ -1,5 +1,7 @@
 package com.shopstuff.shop.item;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,7 +12,8 @@ import javax.validation.constraints.Positive;
 @Builder
 public class ItemDTO {
 
-    private Integer id;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private int id;
     @NotBlank(message = "Can't be blank")
     private String name;
     @Positive(message = "Has to be higher than 0")

@@ -1,7 +1,7 @@
 package com.shopstuff.shop.item.viewed;
 
 
-import com.shopstuff.shop.item.Item;
+import com.shopstuff.shop.item.ItemDTO;
 import com.shopstuff.shop.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,8 +21,9 @@ public class ViewedItemController {
 
     @GetMapping("/user/{id}/items/recent")
     @PreAuthorize("hasRole('ADMIN') or (@userService.correctUser(principal.username,#id) and hasRole('CUSTOMER'))")
-    public Page<Item> recentItemsByUser(@PathVariable int id,
-                                        @PageableDefault(size = 5, sort = "lastViewed") Pageable pageable) {
-        return viewedItemService.recentItemsByUser(id, pageable);
+    public Page<ItemDTO> recentItemsByUser(@PathVariable int id,
+                                           @PageableDefault(size = 5, sort = "lastViewed") Pageable pageable) {
+        var page = viewedItemService.recentItemsByUser(id, pageable);
+        return page.map(ItemDTO::toDto);
     }
 }

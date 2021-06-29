@@ -89,17 +89,16 @@ public class ItemControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testPostItemAndReturnBody() throws Exception {
-        Item item = Item.builder().name("Phone").price(7000).build();
-        String json = objectMapper.writeValueAsString(item);
+        var itemDTO = ItemDTO.builder().name("Phone").price(7000).build();
+        String json = objectMapper.writeValueAsString(itemDTO);
         mockMvc.perform(post("/item").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
-                .andExpect(jsonPath("$.name").value(item.getName()))
-                .andExpect(jsonPath("$.price").value(item.getPrice()))
+                .andExpect(jsonPath("$.name").value(itemDTO.getName()))
+                .andExpect(jsonPath("$.price").value(itemDTO.getPrice()))
                 .andDo(document("item/post-item",
                         requestFields(
-                                fieldWithPath("id").description("Id of the item, not necessary as it will be provided"),
                                 fieldWithPath("name").description("Name of the item to be added"),
                                 fieldWithPath("price").description("Price of the item to be added")
                         ),
@@ -152,21 +151,20 @@ public class ItemControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testPutUpdatingItemChangingTheItem() throws Exception {
-        Item item = Item.builder().name("Phone").price(7000).build();
+        var item = Item.builder().name("Phone").price(7000).build();
         item = itemRepository.save(item);
-        Item updatedItem = Item.builder().name("Adapter").price(2000).build();
-        String json = objectMapper.writeValueAsString(updatedItem);
+        var updatedItemDTO = ItemDTO.builder().name("Adapter").price(2000).build();
+        String json = objectMapper.writeValueAsString(updatedItemDTO);
         mockMvc.perform(put("/item/{id}", item.getId()).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(item.getId()))
-                .andExpect(jsonPath("$.price").value(updatedItem.getPrice()))
-                .andExpect(jsonPath("$.name").value(updatedItem.getName()))
+                .andExpect(jsonPath("$.price").value(updatedItemDTO.getPrice()))
+                .andExpect(jsonPath("$.name").value(updatedItemDTO.getName()))
                 .andDo(document("item/update",
                         pathParameters(
                                 parameterWithName("id").description("Id of the item to be updated")
                         ),
                         requestFields(
-                                fieldWithPath("id").description("Field is ignored as the id is provided by the path variable"),
                                 fieldWithPath("name").description("New name of the item"),
                                 fieldWithPath("price").description("New price of the item")
                         ),
