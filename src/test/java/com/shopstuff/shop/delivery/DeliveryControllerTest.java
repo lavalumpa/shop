@@ -38,7 +38,7 @@ public class DeliveryControllerTest {
         var user = User.builder().name("steve")
                 .password("password")
                 .email("generic@google.com").build();
-        user.add(Role.CUSTOMER);
+        user.addRole(Role.CUSTOMER);
         user = userRepository.save(user);
         var delivery = Delivery.builder().city("Belgrade")
                 .street("Sazonova")
@@ -66,7 +66,7 @@ public class DeliveryControllerTest {
         var user = User.builder().name("steve")
                 .password("password")
                 .email("generic@google.com").build();
-        user.add(Role.CUSTOMER);
+        user.addRole(Role.CUSTOMER);
         user = userRepository.save(user);
         var delivery = Delivery.builder().city("Belgrade")
                 .street("Sazonova")

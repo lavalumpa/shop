@@ -32,27 +32,25 @@ public class UserControllerTest {
     @Test
     @WithAnonymousUser
     public void testAddUser() throws Exception {
-        var user = User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
-        var json = objectMapper.writeValueAsString(user);
+        var userDTO = UserDTO.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
+        var json = objectMapper.writeValueAsString(userDTO);
         mockMvc.perform(post("/user").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/user/1"))
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value(user.getName()))
-                .andExpect(jsonPath("$.email").value(user.getEmail()))
-                .andExpect(jsonPath("$.password").value(user.getPassword()))
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.lastModifiedDate").exists());
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.name").value(userDTO.getName()))
+                .andExpect(jsonPath("$.email").value(userDTO.getEmail()))
+                .andExpect(jsonPath("$.password").doesNotExist());
         var cart = cartRepository.findAll().get(0);
-        user = userRepository.findAll().get(0);
+        var user= userRepository.findAll().get(0);
         assertEquals(cart.getUser().getId(), user.getId());
     }
 
     @Test
     public void testAddInvalidUser() throws Exception {
-        var user = User.builder().name("Steve").email("test").password("4az5j@98gbmawq").build();
-        var json = objectMapper.writeValueAsString(user);
+        var userDTO = UserDTO.builder().name("Steve").email("test").password("4az5j@98gbmawq").build();
+        var json = objectMapper.writeValueAsString(userDTO);
         var error = mockMvc.perform(post("/user").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isBadRequest())

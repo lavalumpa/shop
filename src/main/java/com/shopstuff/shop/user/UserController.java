@@ -21,9 +21,14 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or isAnonymous()")
-    public ResponseEntity<User> addCustomer(@Valid @RequestBody  User user) {
-        userService.saveCustomer(user);
-        return ResponseEntity.created(URI.create("/user/" + user.getId())).body(user);
+    public ResponseEntity<UserDTO> addCustomer(@Valid @RequestBody UserDTO userDTO) {
+        var user = User.builder()
+                .email(userDTO.getEmail())
+                .name(userDTO.getName())
+                .password(userDTO.getPassword())
+                .build();
+        var savedUser = userService.saveCustomer(user);
+        return ResponseEntity.created(URI.create("/user/" + user.getId())).body(UserDTO.toDto(savedUser));
     }
 
 }

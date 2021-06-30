@@ -26,7 +26,7 @@ public class UserService {
 
     @Transactional
     public User saveCustomer(User user) {
-        user.add(Role.CUSTOMER);
+        user.addRole(Role.CUSTOMER);
         var savedUser = userRepository.save(user);
         cartService.createCart(savedUser);
         return savedUser;
