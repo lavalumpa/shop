@@ -2,6 +2,8 @@ package com.shopstuff.shop.user;
 
 
 import com.shopstuff.shop.cart.CartService;
+import com.shopstuff.shop.exceptions.UserEmailDuplicateException;
+import com.shopstuff.shop.exceptions.UserNameDuplicateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ public class UserService {
 
     @Transactional
     public User saveCustomer(User user) {
+        if (userRepository.existsByName(user.getName())) throw new UserNameDuplicateException();
+        if (userRepository.existsByEmail(user.getEmail())) throw new UserEmailDuplicateException();
         user.addRole(Role.CUSTOMER);
         var savedUser = userRepository.save(user);
         cartService.createCart(savedUser);
