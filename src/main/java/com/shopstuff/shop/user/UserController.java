@@ -33,15 +33,13 @@ public class UserController {
 
 
     @ExceptionHandler(UserEmailDuplicateException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String emailExists(){
-        return "User with given email already exists";
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "User with given email already exists")
+    public void emailExists() {
     }
 
     @ExceptionHandler(UserNameDuplicateException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String nameExists(){
-        return "User with given name already exists";
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "User with given name already exists")
+    public void nameExists() {
     }
 
 }
