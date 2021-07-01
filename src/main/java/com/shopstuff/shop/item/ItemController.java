@@ -31,7 +31,9 @@ public class ItemController {
     @GetMapping("/{id}")
     public ItemDTO getItem(@PathVariable int id, Principal principal) {
         var item = itemService.findById(id).orElseThrow(NotFoundException::new);
-        viewedItemService.itemViewed(principal.getName(), item);
+        if (principal!=null){
+            viewedItemService.itemViewed(principal.getName(), item);
+        }
         return ItemDTO.toDto(item);
     }
 

@@ -17,6 +17,7 @@ public class ShopSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter 
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/user").permitAll()
+                .antMatchers(HttpMethod.GET,"/item/**").permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .and().csrf()
