@@ -1,6 +1,7 @@
 package com.shopstuff.shop.cart;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.shopstuff.shop.cart.validator.UniqueCartItemIds;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 @Builder
 public class CartDTO {
     private int id;
+    @UniqueCartItemIds
     private List<@Valid CartItemDTO> cartItems;
 
     @JsonGetter

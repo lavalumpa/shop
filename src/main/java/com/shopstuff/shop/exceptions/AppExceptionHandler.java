@@ -16,6 +16,5 @@ public class AppExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Bad request")
     public void badRequest() {
-
     }
 }
