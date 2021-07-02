@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 @Builder
 public class CartDTO {
     private int id;
-    private List<CartItemDTO> cartItems;
+    private List<@Valid CartItemDTO> cartItems;
 
     @JsonGetter
     public int totalPrice() {
