@@ -1,5 +1,6 @@
 package com.shopstuff.shop.security;
 
+import com.shopstuff.shop.exceptions.NotFoundException;
 import com.shopstuff.shop.user.User;
 import com.shopstuff.shop.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +26,10 @@ public class DatabaseUserDetailService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByName(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+        var user = userRepository.findByName(username).orElseThrow(NotFoundException::new);
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getName())
-                .password( user.getPassword())
+                .password(user.getPassword())
                 .roles(user.getRoles()
                         .stream()
                         .map(Enum::toString)
@@ -39,7 +39,7 @@ public class DatabaseUserDetailService implements UserDetailsService {
 
 
     @Bean
-    public PasswordEncoder bcryptEncoder(){
+    public PasswordEncoder bcryptEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 }

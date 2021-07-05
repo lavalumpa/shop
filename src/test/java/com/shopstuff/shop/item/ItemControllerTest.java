@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Transactional
-@AutoConfigureTestDatabase
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 public class ItemControllerTest {

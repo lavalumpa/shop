@@ -32,7 +32,7 @@ public class UserControllerTest {
     @Test
     @WithAnonymousUser
     public void testAddUser() throws Exception {
-        var userDTO = UserDTO.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
+        var userDTO = TestUserDTO.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();
         var json = objectMapper.writeValueAsString(userDTO);
         mockMvc.perform(post("/user").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                 .content(json))
