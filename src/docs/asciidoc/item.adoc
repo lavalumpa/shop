@@ -1,5 +1,6 @@
 :page: https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html[page]
 :item: build/generated-snippets/item
+:viewedItemRecent: build/generated-snippets/viewed-item/recent-items-by-user
 
 
 
@@ -51,5 +52,11 @@ include::{item}/update/response-body.adoc[]
 include::{item}/update/response-fields.adoc[]
 
 
+Endpoint to view items viewed by the user with given id, available to user with role CUSTOMER matching the given id or ADMIN:
 
 
+include::{viewedItemRecent}/curl-request.adoc[]
+include::{viewedItemRecent}/path-parameters.adoc[]
+include::{viewedItemRecent}/request-parameters.adoc[]
+include::{viewedItemRecent}/response-body.adoc[]
+include::{viewedItemRecent}/response-fields.adoc[]
