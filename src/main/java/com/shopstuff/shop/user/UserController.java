@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,14 +19,16 @@ import java.net.URI;
 public class UserController {
 
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or isAnonymous()")
     public ResponseEntity<UserDTO> addCustomer(@Valid @RequestBody UserDTO userDTO) {
+        var encodedPassword= passwordEncoder.encode(userDTO.getPassword());
         var user = User.builder()
                 .email(userDTO.getEmail())
                 .name(userDTO.getName())
-                .password(userDTO.getPassword())
+                .password(encodedPassword)
                 .build();
         var savedUser = userService.saveCustomer(user);
         return ResponseEntity.created(URI.create("/user/" + user.getId())).body(UserDTO.toDto(savedUser));
