@@ -36,6 +36,13 @@ public class UserService {
         return savedUser;
     }
 
+    @Transactional
+    public User saveWorker(User user){
+        if (userRepository.existsByName(user.getName())) throw new UserNameDuplicateException();
+        if (userRepository.existsByEmail(user.getEmail())) throw new UserEmailDuplicateException();
+        return userRepository.save(user);
+    }
+
     public boolean correctUser(String username, int id) {
         return userRepository.findById(id)
                 .map(User::getName)

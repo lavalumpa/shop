@@ -21,7 +21,11 @@ public class UserWorkerDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @Size(min=1, message = "Has to include at least 1 Role")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Size(min=1, message = "Has to include at least 1 Role")
     private Set<Role> roles;
+
+    public boolean containsRole(Role role){
+        return roles.contains(role);
+    }
 }
