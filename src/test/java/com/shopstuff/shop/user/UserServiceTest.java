@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -30,27 +32,57 @@ public class UserServiceTest {
 
 
     @Test
-    public void testingUserAndCartCreationWithSaveUserMethod() {
+    public void testingUserAndCartCreationWithSaveCustomer() {
         var user = createSteve();
+        when(userRepository.existsByName((user.getName()))).thenReturn(false);
+        when(userRepository.existsByEmail((user.getEmail()))).thenReturn(false);
         when(userRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         userService.saveCustomer(user);
+        verify(userRepository).save(user);
         verify(cartService).createCart(eq(user));
     }
 
     @Test
-    public void testingUserWithNameExistsAlready(){
+    public void testingSaveCustomerWithNameExistsAlready(){
         var user=createSteve();
         when(userRepository.existsByName(user.getName())).thenReturn(true);
         assertThrows(UserNameDuplicateException.class,()->userService.saveCustomer(user));
     }
 
     @Test
-    public void testingUserWithEmailExistsAlready(){
+    public void testingSaveCustomerWithEmailExistsAlready(){
         var user=createSteve();
         when(userRepository.existsByName(user.getName())).thenReturn(false);
         when(userRepository.existsByEmail(user.getEmail())).thenReturn(true);
         assertThrows(UserEmailDuplicateException.class,()->userService.saveCustomer(user));
     }
+
+    @Test
+    public void testingSaveWorkerDeliveryManager(){
+        var user=createSteve();
+        user.setRoles(Set.of(Role.DELIVERY_MANAGER));
+        when(userRepository.existsByName((user.getName()))).thenReturn(false);
+        when(userRepository.existsByEmail((user.getEmail()))).thenReturn(false);
+        userService.saveWorker(user);
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    public void testingSaveWorkerWithEmailExisting(){
+        var user=createSteve();
+        when(userRepository.existsByName(user.getName())).thenReturn(false);
+        when(userRepository.existsByEmail(user.getEmail())).thenReturn(true);
+        assertThrows(UserEmailDuplicateException.class,()->userService.saveCustomer(user));
+    }
+
+    @Test
+    public void testingSaveWorkerWithNameExistsAlready(){
+        var user=createSteve();
+        when(userRepository.existsByName(user.getName())).thenReturn(true);
+        assertThrows(UserNameDuplicateException.class,()->userService.saveCustomer(user));
+    }
+
+
 
     public User createSteve(){
         return User.builder().name("Steve").email("steve705@yahoo.com").password("4az5j@98gbmawq").build();

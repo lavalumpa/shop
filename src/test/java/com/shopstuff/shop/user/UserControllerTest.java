@@ -9,8 +9,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,6 +48,25 @@ public class UserControllerTest {
         var cart = cartRepository.findAll().get(0);
         var user= userRepository.findAll().get(0);
         assertEquals(cart.getUser().getId(), user.getId());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void testAddWorker() throws Exception {
+        var userWorkerDto = TestUserDTO.builder()
+                .name("Mark")
+                .email("mark700@yahoo.com")
+                .password("908jkljh")
+                .roles(Set.of(Role.DELIVERY_MANAGER))
+                .build();
+        var json = objectMapper.writeValueAsString(userWorkerDto);
+        mockMvc.perform(post("/user/worker").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.name").value(userWorkerDto.getName()))
+                .andExpect(jsonPath("$.email").value(userWorkerDto.getEmail()))
+                .andExpect(jsonPath("$.password").doesNotExist());
     }
 
     @Test
