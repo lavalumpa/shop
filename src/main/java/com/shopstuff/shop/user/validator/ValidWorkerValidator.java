@@ -6,15 +6,15 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Set;
 
-public class DoesNotContainAdminValidator implements ConstraintValidator<DoesNotContainAdmin, Set<Role>> {
+public class ValidWorkerValidator implements ConstraintValidator<ValidWorker, Set<Role>> {
 
     @Override
-    public void initialize(DoesNotContainAdmin doesNotContainAdmin) {
+    public void initialize(ValidWorker validWorker) {
     }
 
 
     @Override
     public boolean isValid(Set<Role> value, ConstraintValidatorContext context) {
-        return !value.contains(Role.ADMIN);
+        return !value.contains(Role.ADMIN) && !value.contains(Role.CUSTOMER);
     }
 }

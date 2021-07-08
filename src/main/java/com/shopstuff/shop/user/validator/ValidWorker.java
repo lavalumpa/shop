@@ -11,9 +11,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({FIELD})
 @Retention(RUNTIME)
-@Constraint(validatedBy = {DoesNotContainAdminValidator.class})
+@Constraint(validatedBy = {ValidWorkerValidator.class})
 @Documented
-public @interface DoesNotContainAdmin {
+public @interface ValidWorker {
     String message() default "Cannot contain ADMIN role";
 
     Class<?>[] groups() default {};

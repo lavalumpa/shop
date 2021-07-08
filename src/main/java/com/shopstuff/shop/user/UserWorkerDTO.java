@@ -2,7 +2,7 @@ package com.shopstuff.shop.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.shopstuff.shop.user.validator.DoesNotContainAdmin;
+import com.shopstuff.shop.user.validator.ValidWorker;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -24,7 +24,7 @@ public class UserWorkerDTO {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Size(min=1, message = "Has to include at least 1 Role")
-    @DoesNotContainAdmin
+    @ValidWorker
     private Set<Role> roles;
 
     public boolean containsRole(Role role){
