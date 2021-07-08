@@ -34,6 +34,19 @@ public class UserController {
         return ResponseEntity.created(URI.create("/user/" + user.getId())).body(UserDTO.toDto(savedUser));
     }
 
+    @PostMapping("/worker")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserDTO> addWorker(@Valid @RequestBody UserWorkerDTO userWorkerDTO){
+        var encodedPassword = passwordEncoder.encode(userWorkerDTO.getPassword());
+        var user=User.builder()
+                .email(userWorkerDTO.getEmail())
+                .name(userWorkerDTO.getName())
+                .password(encodedPassword)
+                .roles(userWorkerDTO.getRoles())
+                .build();
+        var savedUser = userService.saveWorker(user);
+        return ResponseEntity.created(URI.create(("/user?"+user.getId()))).body(UserDTO.toDto(savedUser));
+    }
 
     @ExceptionHandler(UserEmailDuplicateException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "User with given email already exists")
