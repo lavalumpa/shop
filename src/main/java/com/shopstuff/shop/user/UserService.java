@@ -5,6 +5,7 @@ import com.shopstuff.shop.cart.CartService;
 import com.shopstuff.shop.exceptions.UserEmailDuplicateException;
 import com.shopstuff.shop.exceptions.UserNameDuplicateException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final CartService cartService;
+    private final PasswordEncoder passwordEncoder;
 
     public Optional<User> findById(int id) {
         return userRepository.findById(id);
@@ -41,6 +43,10 @@ public class UserService {
         if (userRepository.existsByName(user.getName())) throw new UserNameDuplicateException();
         if (userRepository.existsByEmail(user.getEmail())) throw new UserEmailDuplicateException();
         return userRepository.save(user);
+    }
+
+    public String encode(String password){
+        return passwordEncoder.encode(password);
     }
 
     public boolean correctUser(String username, int id) {
