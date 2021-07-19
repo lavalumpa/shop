@@ -38,8 +38,4 @@ public class DatabaseUserDetailService implements UserDetailsService {
     }
 
 
-    @Bean
-    public PasswordEncoder bcryptEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
 }
