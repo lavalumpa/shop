@@ -15,6 +15,10 @@ configurations {
 	}
 }
 
+springBoot {
+	mainClass = 'com.shopstuff.shop.ShopApplication'
+}
+
 
 repositories {
 	mavenCentral()
