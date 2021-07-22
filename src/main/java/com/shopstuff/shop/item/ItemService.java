@@ -1,5 +1,6 @@
 package com.shopstuff.shop.item;
 
+import com.shopstuff.shop.exceptions.NameDuplicateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ public class ItemService {
     }
 
     public Item saveItem(Item item) {
+        if (itemRepository.existsByName(item.getName())) throw new NameDuplicateException();
         return itemRepository.save(item);
     }
 

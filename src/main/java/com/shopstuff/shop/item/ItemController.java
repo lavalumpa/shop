@@ -1,6 +1,7 @@
 package com.shopstuff.shop.item;
 
 
+import com.shopstuff.shop.exceptions.NameDuplicateException;
 import com.shopstuff.shop.exceptions.NotFoundException;
 import com.shopstuff.shop.item.viewed.ViewedItemService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class ItemController {
     @GetMapping("/{id}")
     public ItemDTO getItem(@PathVariable int id, Principal principal) {
         var item = itemService.findById(id).orElseThrow(NotFoundException::new);
-        if (principal!=null){
+        if (principal != null) {
             viewedItemService.itemViewed(principal.getName(), item);
         }
         return ItemDTO.toDto(item);
@@ -39,7 +40,7 @@ public class ItemController {
 
     @GetMapping("/search")
     public Page<ItemDTO> searchItems(@RequestParam(name = "q") String name, @PageableDefault(size = 10) Pageable pageable) {
-        var itemPage=itemService.searchByName(name, pageable);
+        var itemPage = itemService.searchByName(name, pageable);
         return itemPage.map(ItemDTO::toDto);
     }
 
@@ -51,7 +52,7 @@ public class ItemController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ItemDTO> addItem(@RequestBody @Valid ItemDTO itemDTO) {
-        var item=Item.builder()
+        var item = Item.builder()
                 .name(itemDTO.getName())
                 .price(itemDTO.getPrice())
                 .build();
@@ -63,15 +64,20 @@ public class ItemController {
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ItemDTO updateItem(@PathVariable int id, @RequestBody @Valid ItemDTO itemDTO) {
-        var item=Item.builder()
+        var item = Item.builder()
                 .name(itemDTO.getName())
                 .price(itemDTO.getPrice())
                 .build();
         if (itemService.existsById(id)) {
             item.setId(id);
         }
-        var updated=itemService.saveItem(item);
+        var updated = itemService.saveItem(item);
         return ItemDTO.toDto(updated);
+    }
+
+    @ExceptionHandler(NameDuplicateException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Item with name already exists")
+    public void duplicateName() {
     }
 
     @DeleteMapping("{id}")

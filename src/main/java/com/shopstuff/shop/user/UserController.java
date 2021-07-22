@@ -2,12 +2,11 @@ package com.shopstuff.shop.user;
 
 
 import com.shopstuff.shop.exceptions.UserEmailDuplicateException;
-import com.shopstuff.shop.exceptions.UserNameDuplicateException;
+import com.shopstuff.shop.exceptions.NameDuplicateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -50,7 +49,7 @@ public class UserController {
     public void emailExists() {
     }
 
-    @ExceptionHandler(UserNameDuplicateException.class)
+    @ExceptionHandler(NameDuplicateException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "User with given name already exists")
     public void nameExists() {
     }

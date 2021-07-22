@@ -3,7 +3,7 @@ package com.shopstuff.shop.user;
 
 import com.shopstuff.shop.cart.CartService;
 import com.shopstuff.shop.exceptions.UserEmailDuplicateException;
-import com.shopstuff.shop.exceptions.UserNameDuplicateException;
+import com.shopstuff.shop.exceptions.NameDuplicateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class UserService {
 
     @Transactional
     public User saveCustomer(User user) {
-        if (userRepository.existsByName(user.getName())) throw new UserNameDuplicateException();
+        if (userRepository.existsByName(user.getName())) throw new NameDuplicateException();
         if (userRepository.existsByEmail(user.getEmail())) throw new UserEmailDuplicateException();
         user.addRole(Role.CUSTOMER);
         var savedUser = userRepository.save(user);
@@ -40,7 +40,7 @@ public class UserService {
 
     @Transactional
     public User saveWorker(User user){
-        if (userRepository.existsByName(user.getName())) throw new UserNameDuplicateException();
+        if (userRepository.existsByName(user.getName())) throw new NameDuplicateException();
         if (userRepository.existsByEmail(user.getEmail())) throw new UserEmailDuplicateException();
         return userRepository.save(user);
     }

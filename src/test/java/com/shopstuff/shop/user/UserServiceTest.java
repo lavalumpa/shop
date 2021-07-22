@@ -3,7 +3,7 @@ package com.shopstuff.shop.user;
 
 import com.shopstuff.shop.cart.CartService;
 import com.shopstuff.shop.exceptions.UserEmailDuplicateException;
-import com.shopstuff.shop.exceptions.UserNameDuplicateException;
+import com.shopstuff.shop.exceptions.NameDuplicateException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -46,7 +46,7 @@ public class UserServiceTest {
     public void testingSaveCustomerWithNameExistsAlready(){
         var user=createSteve();
         when(userRepository.existsByName(user.getName())).thenReturn(true);
-        assertThrows(UserNameDuplicateException.class,()->userService.saveCustomer(user));
+        assertThrows(NameDuplicateException.class,()->userService.saveCustomer(user));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class UserServiceTest {
     public void testingSaveWorkerWithNameExistsAlready(){
         var user=createSteve();
         when(userRepository.existsByName(user.getName())).thenReturn(true);
-        assertThrows(UserNameDuplicateException.class,()->userService.saveCustomer(user));
+        assertThrows(NameDuplicateException.class,()->userService.saveCustomer(user));
     }
 
 
