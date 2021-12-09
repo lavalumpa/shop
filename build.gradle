@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.4.5'
+	id 'org.springframework.boot' version '2.6.1'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id "org.asciidoctor.jvm.convert" version "3.3.2"
 	id 'java'
@@ -7,7 +7,7 @@ plugins {
 
 group = 'com.shopstuff'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '16'
+sourceCompatibility = '17'
 
 configurations {
 	compileOnly {
@@ -49,7 +49,7 @@ dependencies {
 }
 ext {
 	set('snippetsDir', file("build/generated-snippets"))
-	set('springCloudVersion', "2020.0.3-SNAPSHOT")
+	set('springCloudVersion', "2021.0.0")
 }
 
 dependencyManagement {
